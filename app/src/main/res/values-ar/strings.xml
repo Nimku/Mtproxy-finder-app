@@ -51,13 +51,13 @@
     <string name="channel_dismiss">تجاهل</string>
     <string name="channel_open">فتح القناة</string>
     <string name="channel_empty_title">لا توجد نتائج</string>
-    <string name="channel_empty_body">يتم نشر البروكسيات العاملة بانتظام في @NimkuProxy</string>
+    <string name="channel_empty_body">يتم نشر البروكسيات العاملة بانتظام في @SetProxy</string>
     <string name="channel_settings_title">قناتنا على تيليجرام</string>
-    <string name="channel_settings_sub">@NimkuProxy — بروكسيات وتحديثات وأخبار</string>
+    <string name="channel_settings_sub">@SetProxy — بروكسيات وتحديثات وأخبار</string>
     <string name="channel_about_title">قناة تيليجرام</string>
     <string name="channel_qr_cd">رمز QR للقناة</string>
     <string name="channel_invite_title">انضم إلى قناتنا</string>
-    <string name="channel_invite_body">شكرًا لاستخدامك Nimku Proxy! تحتوي @NimkuProxy على بروكسيات جديدة وتحديثات.</string>
+    <string name="channel_invite_body">شكرًا لاستخدامك Nimku Proxy! تحتوي @SetProxy على بروكسيات جديدة وتحديثات.</string>
     <string name="channel_changelog">سجل التغييرات في القناة</string>
     <string name="channel_open_failed">تعذر فتح تيليجرام</string>
     <string name="copy_link">نسخ الرابط</string>
