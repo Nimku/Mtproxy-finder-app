@@ -119,6 +119,21 @@ object HttpSupport {
                 .replace("{path}", path)
         }
 
+    /**
+     * Same mirrors as [githubCdnUrls], but with raw.githubusercontent.com moved first and
+     * cache-busted with a timestamp query param. Third-party CDN mirrors (jsDelivr, githack)
+     * cache GitHub content for anywhere from minutes to a day, which is fine for proxy source
+     * lists but not for subscription status that must reflect a payment within seconds — so for
+     * that one file we prefer the freshest source and only fall back to the cached mirrors if it
+     * can't be reached at all.
+     */
+    fun freshnessCriticalUrls(owner: String, repo: String, ref: String, path: String): List<String> {
+        val direct = "https://raw.githubusercontent.com/$owner/$repo/$ref/$path?cb=${System.currentTimeMillis()}"
+        val mirrors = githubCdnUrls(owner, repo, ref, path)
+            .filterNot { it.startsWith("https://raw.githubusercontent.com/") }
+        return listOf(direct) + mirrors
+    }
+
     suspend fun downloadWithRetry(
         client: OkHttpClient,
         urls: List<String>,
