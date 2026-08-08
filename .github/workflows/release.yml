@@ -1,0 +1,63 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Build debug APK
+        run: ./gradlew --no-daemon assembleDebug
+
+      # No release signing key is configured yet, so this ships the
+      # debug-signed build (installable via sideload, same as the reference
+      # app's own distribution model). Add a signingConfig + secrets to
+      # app/build.gradle.kts and switch this to assembleRelease once you have
+      # a real release keystore.
+      - name: Rename and checksum APK
+        id: apk
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          NAME="NimkuProxy-${TAG}.apk"
+          mkdir -p release
+          cp app/build/outputs/apk/debug/app-debug.apk "release/${NAME}"
+          sha256sum "release/${NAME}" | awk '{print $1}' > "release/${NAME}.sha256"
+          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/${{ steps.apk.outputs.name }}
+            release/${{ steps.apk.outputs.name }}.sha256
+          generate_release_notes: true
