@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MTProxy Finder</string>
+    <string name="app_name">Nimku Proxy</string>
     <string name="tagline">Live-скан · MTProto как в Telegram · seed offline</string>
     <string name="choose_source">Мега-скан — рабочие появятся сразу</string>
     <string name="sources_title">Источники</string>
@@ -42,22 +42,22 @@
     <string name="telegram_open_failed">Не удалось открыть Telegram</string>
     <string name="link_open_failed">Не удалось открыть ссылку</string>
     <string name="no_proxies">Нет прокси для копирования</string>
-    <string name="help_message">MTProxy Finder загружает MTProto-прокси из открытых источников, проверяет доступность и сортирует по пингу.\n\n• До 50 проверок параллельно\n• Показывает только рабочие сервера\n• Чем ниже пинг — тем быстрее\n\nИсточники:\n• Kort0881 — RU / EU\n• SurfboardV2ray — большой список\n\nСкачать все — объединяет источники без проверки.\nПроверить из файла — ваш .txt со ссылками tg://proxy.</string>
+    <string name="help_message">Nimku Proxy загружает MTProto-прокси из открытых источников, проверяет доступность и сортирует по пингу.\n\n• До 50 проверок параллельно\n• Показывает только рабочие сервера\n• Чем ниже пинг — тем быстрее\n\nИсточники:\n• Kort0881 — RU / EU\n• SurfboardV2ray — большой список\n\nСкачать все — объединяет источники без проверки.\nПроверить из файла — ваш .txt со ссылками tg://proxy.</string>
     <string name="disclaimer">Работоспособность прокси в Telegram не гарантируется. Используйте на свой страх и риск.</string>
 
-    <string name="channel_card_title">Канал MTProxy Finder</string>
+    <string name="channel_card_title">Канал Nimku Proxy</string>
     <string name="channel_card_subtitle">Свежие прокси, апдейты и новости</string>
     <string name="channel_subscribe">Подписаться</string>
     <string name="channel_dismiss">Скрыть</string>
     <string name="channel_open">Открыть канал</string>
     <string name="channel_empty_title">Ничего не нашлось</string>
-    <string name="channel_empty_body">Рабочие прокси регулярно выкладываем в канале @MTProxy Finder</string>
+    <string name="channel_empty_body">Рабочие прокси регулярно выкладываем в канале @NimkuProxyApp</string>
     <string name="channel_settings_title">Наш Telegram-канал</string>
-    <string name="channel_settings_sub">@MTProxy Finder — прокси, апдейты, новости</string>
+    <string name="channel_settings_sub">@NimkuProxyApp — прокси, апдейты, новости</string>
     <string name="channel_about_title">Telegram-канал</string>
     <string name="channel_qr_cd">QR-код канала</string>
     <string name="channel_invite_title">Подпишитесь на канал</string>
-    <string name="channel_invite_body">Спасибо, что пользуетесь MTProxy Finder! В @MTProxy Finder — свежие прокси и обновления.</string>
+    <string name="channel_invite_body">Спасибо, что пользуетесь Nimku Proxy! В @NimkuProxyApp — свежие прокси и обновления.</string>
     <string name="channel_changelog">Changelog в канале</string>
     <string name="channel_open_failed">Не удалось открыть Telegram</string>
     <string name="copy_link">Скопировать ссылку</string>
@@ -68,7 +68,7 @@
     <string name="settings_title">Настройки</string>
     <string name="settings_hint">Источники прокси подключаются при мега-скане. Канал — без рекламы и трекеров.</string>
     <string name="settings_language">Язык приложения</string>
-    <string name="settings_language_summary">Выберите язык интерфейса MTProxy Finder</string>
+    <string name="settings_language_summary">Выберите язык интерфейса Nimku Proxy</string>
     <string name="language_dialog_title">Язык приложения</string>
     <string name="language_follow_system">Как в системе</string>
     <string name="settings_custom_sources">Мои источники прокси</string>
@@ -81,7 +81,7 @@
     <string name="settings_unmetered_only">Только безлимитная сеть</string>
     <string name="settings_unmetered_summary">Обычно Wi-Fi; Android определяет сеть как unmetered</string>
     <string name="settings_kort_source">Источник Kort Verified</string>
-    <string name="settings_kort_source_summary">Публичные generated feeds kort0881/telegram-proxy-collector. MTProxy Finder независимо проверяет MTProto handshake.</string>
+    <string name="settings_kort_source_summary">Публичные generated feeds kort0881/telegram-proxy-collector. Nimku Proxy независимо проверяет MTProto handshake.</string>
     <string name="settings_check_updates">Проверить обновления приложения</string>
     <string name="settings_check_updates_summary">Проверить GitHub Releases и безопасно установить подписанный APK</string>
     <string name="settings_bypass_hint">Если Telegram недоступен: мега-скан берёт GitHub/CDN и зеркала каналов (Jina, RSSHub), не только t.me.</string>
@@ -137,7 +137,7 @@
     <string name="theme_light">Светлая</string>
     <string name="theme_dark">Тёмная</string>
     <string name="selected_option">✓ %1$s</string>
-    <string name="help_dialog_title">Как работает MTProxy Finder</string>
+    <string name="help_dialog_title">Как работает Nimku Proxy</string>
     <string name="help_step_sources">• Собирает списки из GitHub, CDN, зеркал и ваших HTTPS-источников.</string>
     <string name="help_step_handshake">• Проверяет настоящий MTProto handshake, а не только открытый TCP-порт.</string>
     <string name="help_step_profiles">• Профили Wi-Fi/LTE управляют параллелизмом, таймаутами и расходом батареи.</string>
@@ -148,7 +148,7 @@
     <string name="update_download_failed_title">Не удалось обновить</string>
     <string name="update_check_failed_title">Не удалось проверить обновление</string>
     <string name="update_dialog_title">Обновление %1$s</string>
-    <string name="update_available_default">Доступна новая версия MTProxy Finder</string>
+    <string name="update_available_default">Доступна новая версия Nimku Proxy</string>
     <string name="update_download_install">Скачать и установить</string>
     <string name="update_open_github">Открыть GitHub</string>
     <string name="update_check_title">Проверка обновления</string>
@@ -251,13 +251,13 @@
     <string name="custom_source_add_failed">Не удалось добавить источник</string>
 
     <string name="rescan_channel_name">Фоновый скан</string>
-    <string name="rescan_done_title">MTProxy Finder: скан завершён</string>
+    <string name="rescan_done_title">Nimku Proxy: скан завершён</string>
     <string name="rescan_done_body">Найдено прокси: %1$d</string>
     <string name="rescan_kort_error">Не удалось обновить verified snapshot</string>
     <string name="sources_summary">Источники: %1$d из %2$d ответили</string>
 
     <string name="update_channel_name">Обновления приложения</string>
-    <string name="update_notification_title">Доступна MTProxy Finder %1$s</string>
+    <string name="update_notification_title">Доступна Nimku Proxy %1$s</string>
     <string name="update_notification_body">Нажмите, чтобы скачать и установить проверенный APK</string>
     <string name="settings_auto_update">Автопроверка обновлений</string>
     <string name="settings_auto_update_summary">Проверять GitHub Releases в фоне каждые 6 часов</string>
@@ -283,7 +283,7 @@
     <string name="appearance_text_large">Большой</string>
     <string name="appearance_text_extra_large">Очень большой</string>
     <string name="appearance_saved_automatically">Изменения сразу видны и сохраняются автоматически.</string>
-    <string name="appearance_preview_title">Ваш MTProxy Finder</string>
+    <string name="appearance_preview_title">Ваш Nimku Proxy</string>
     <string name="appearance_preview_body">Предпросмотр выбранной палитры, скруглений и размера текста.</string>
     <string name="appearance_preview_button">Пример кнопки</string>
     <string name="scan_mode_title">Глубина сканирования</string>

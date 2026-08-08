@@ -41,7 +41,7 @@
     <string name="sources_summary">Sources: %1$d of %2$d responded</string>
 
     <string name="update_channel_name">Aggiornamenti app</string>
-    <string name="update_notification_title">MTProxy Finder %1$s è disponibile</string>
+    <string name="update_notification_title">Nimku Proxy %1$s è disponibile</string>
     <string name="update_notification_body">Tocca per scaricare e installare l\'APK verificato</string>
     <string name="settings_auto_update">Controllo automatico</string>
     <string name="settings_auto_update_summary">Controlla GitHub Releases in background ogni 6 ore</string>

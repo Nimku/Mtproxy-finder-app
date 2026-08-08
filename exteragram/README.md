@@ -1,4 +1,4 @@
-# MTProxy Finder — плагин для exteraGram
+# Nimku Proxy — плагин для exteraGram
 
 Поиск и проверка **MTProto-прокси** прямо в [exteraGram](https://github.com/exteraSquad/exteraGram), с **самообновлением** с GitHub.
 
@@ -20,7 +20,7 @@
 
 **Настройки → Данные и память → Прокси** (экран «Настройки прокси»)
 
-Сверху появится блок **MTProxy Finder** с кнопкой **«⚡ Сделать всё»**.
+Сверху появится блок **Nimku Proxy** с кнопкой **«⚡ Сделать всё»**.
 
 Она по очереди:
 
@@ -37,7 +37,7 @@
 .kupu auto
 ```
 
-Или через боковое меню → **MTProxy Finder** → **Сделать всё**.
+Или через боковое меню → **Nimku Proxy** → **Сделать всё**.
 
 ## Команды
 
@@ -54,7 +54,7 @@
 | `.kupu update` | Обновить плагин с GitHub |
 | `.kupu menu` | Диалог |
 
-Также: пункт **MTProxy Finder** в боковом меню (drawer).
+Также: пункт **Nimku Proxy** в боковом меню (drawer).
 
 ## Источники
 
@@ -77,7 +77,7 @@
 
 ## Заметки
 
-- В плагине проверка **TCP** (быстро). Полноценный MTProto handshake — в Android-приложении MTProxy Finder.
+- В плагине проверка **TCP** (быстро). Полноценный MTProto handshake — в Android-приложении Nimku Proxy.
 - Подключение через SharedConfig + `ConnectionsManager.setProxySettings`.
 - Кнопка на экране прокси: hook `ProxyListActivity` (header / overlay). Если кнопки нет — используйте `.kupu auto`.
 

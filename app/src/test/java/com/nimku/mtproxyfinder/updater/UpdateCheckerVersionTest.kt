@@ -39,14 +39,14 @@ class UpdateCheckerVersionTest {
                   "body": "Updater fix",
                   "assets": [
                     {
-                      "name": "MTProxyFinder-v1.3.3.5.apk",
-                      "browser_download_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/MTProxyFinder-v1.3.3.5.apk",
+                      "name": "NimkuProxy-v1.3.3.5.apk",
+                      "browser_download_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/NimkuProxy-v1.3.3.5.apk",
                       "size": 15600000,
                       "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
                     },
                     {
-                      "name": "MTProxyFinder-v1.3.3.5.apk.sha256",
-                      "browser_download_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/MTProxyFinder-v1.3.3.5.apk.sha256",
+                      "name": "NimkuProxy-v1.3.3.5.apk.sha256",
+                      "browser_download_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/NimkuProxy-v1.3.3.5.apk.sha256",
                       "size": 89
                     }
                   ]
@@ -56,7 +56,7 @@ class UpdateCheckerVersionTest {
         )
 
         assertEquals("v1.3.3.5", release.tagName)
-        assertEquals("MTProxyFinder-v1.3.3.5.apk", release.apkName)
+        assertEquals("NimkuProxy-v1.3.3.5.apk", release.apkName)
         assertEquals(15_600_000L, release.apkSize)
         assertEquals("a".repeat(64), release.sha256)
         assertTrue(release.sha256Url!!.endsWith(".apk.sha256"))
@@ -72,13 +72,13 @@ class UpdateCheckerVersionTest {
                   "html_url": "https://github.com/nimku/mtproxy-finder-app/releases/tag/v1.3.3.5",
                   "assets": [
                     {
-                      "name": "MTProxyFinder-v1.3.3.5.apk",
-                      "browser_download_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/MTProxyFinder-v1.3.3.5.apk",
+                      "name": "NimkuProxy-v1.3.3.5.apk",
+                      "browser_download_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/NimkuProxy-v1.3.3.5.apk",
                       "size": 15600000
                     },
                     {
-                      "name": "MTProxyFinder-v1.3.3.5.apk.sha256",
-                      "browser_download_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/MTProxyFinder-v1.3.3.5.apk.sha256"
+                      "name": "NimkuProxy-v1.3.3.5.apk.sha256",
+                      "browser_download_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/NimkuProxy-v1.3.3.5.apk.sha256"
                     }
                   ]
                 }
@@ -133,13 +133,13 @@ class UpdateCheckerVersionTest {
               "html_url": "https://github.com/nimku/mtproxy-finder-app/releases/tag/v1.3.3.5",
               "assets": [
                 {
-                  "name": "MTProxyFinder-v1.3.3.5.apk",
-                  "browser_download_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/MTProxyFinder-v1.3.3.5.apk",
+                  "name": "NimkuProxy-v1.3.3.5.apk",
+                  "browser_download_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/NimkuProxy-v1.3.3.5.apk",
                   "size": 15600000
                 },
                 {
-                  "name": "MTProxyFinder-v1.3.3.5.apk.sha256",
-                  "browser_download_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/MTProxyFinder-v1.3.3.5.apk.sha256"
+                  "name": "NimkuProxy-v1.3.3.5.apk.sha256",
+                  "browser_download_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/NimkuProxy-v1.3.3.5.apk.sha256"
                 }
               ]
             }
@@ -210,8 +210,8 @@ class UpdateCheckerVersionTest {
                 {
                   "tag_name": "v1.3.3.5",
                   "release_url": "https://github.com/nimku/mtproxy-finder-app/releases/tag/v1.3.3.5",
-                  "apk_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/MTProxyFinder-v1.3.3.5.apk",
-                  "apk_name": "MTProxyFinder-v1.3.3.5.apk",
+                  "apk_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/NimkuProxy-v1.3.3.5.apk",
+                  "apk_name": "NimkuProxy-v1.3.3.5.apk",
                   "apk_size": 15600000,
                   "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
                 }
@@ -242,8 +242,8 @@ class UpdateCheckerVersionTest {
             """
             [
               {
-                "name": "MTProxyFinder-v1.3.3.5.apk",
-                "browser_download_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/MTProxyFinder-v1.3.3.5.apk",
+                "name": "NimkuProxy-v1.3.3.5.apk",
+                "browser_download_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/NimkuProxy-v1.3.3.5.apk",
                 "size": 15600000$digest
               }
             ]
@@ -263,8 +263,8 @@ class UpdateCheckerVersionTest {
         {
           "tag_name": "v1.3.3.5",
           "release_url": "https://github.com/nimku/mtproxy-finder-app/releases/tag/v1.3.3.5",
-          "apk_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/MTProxyFinder-v1.3.3.5.apk",
-          "apk_name": "MTProxyFinder-v1.3.3.5.apk",
+          "apk_url": "https://github.com/nimku/mtproxy-finder-app/releases/download/v1.3.3.5/NimkuProxy-v1.3.3.5.apk",
+          "apk_name": "NimkuProxy-v1.3.3.5.apk",
           "apk_size": 15600000,
           "sha256": "${"b".repeat(64)}"
         }

@@ -45,7 +45,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: MTProxyFinder-debug
+          name: NimkuProxy-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: ignore
 

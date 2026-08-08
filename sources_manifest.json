@@ -13,10 +13,10 @@
       "enabled": true
     },
     {
-      "id": "tg_mtproxyfinder",
-      "name": "TG @MTProxyFinderApp",
+      "id": "tg_nimkuproxy",
+      "name": "TG @NimkuProxyApp",
       "kind": "TELEGRAM_CHANNEL",
-      "channel": "MTProxyFinderApp",
+      "channel": "NimkuProxyApp",
       "enabled": true
     }
   ]

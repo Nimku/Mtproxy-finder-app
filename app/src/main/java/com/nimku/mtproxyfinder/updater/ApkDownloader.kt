@@ -37,7 +37,7 @@ class ApkDownloader(
 
     suspend fun download(
         release: GitHubRelease,
-        fileName: String = "MTProxyFinder-update.apk",
+        fileName: String = "NimkuProxy-update.apk",
         onProgress: (percent: Int) -> Unit = {}
     ): File = withContext(Dispatchers.IO) {
         validateRelease(release)
@@ -51,7 +51,7 @@ class ApkDownloader(
         try {
             val request = Request.Builder()
                 .url(release.apkUrl)
-                .header("User-Agent", "MTProxyFinder-Android-Updater/${BuildConfig.VERSION_NAME}")
+                .header("User-Agent", "NimkuProxy-Android-Updater/${BuildConfig.VERSION_NAME}")
                 .header("Accept", "application/vnd.android.package-archive,application/octet-stream")
                 .build()
 
@@ -99,7 +99,7 @@ class ApkDownloader(
         require(release.apkUrl.startsWith("https://github.com/${BuildConfig.GITHUB_REPO}/releases/download/")) {
             "APK должен быть из официального GitHub Releases"
         }
-        require(release.apkName.startsWith("MTProxyFinder-", true) && release.apkName.endsWith(".apk", true)) {
+        require(release.apkName.startsWith("NimkuProxy-", true) && release.apkName.endsWith(".apk", true)) {
             "Неожиданное имя APK"
         }
         require(release.apkSize < 0 || release.apkSize in MIN_APK_BYTES..MAX_APK_BYTES) { "Некорректный размер APK" }
@@ -109,7 +109,7 @@ class ApkDownloader(
         require(url.startsWith("https://github.com/${BuildConfig.GITHUB_REPO}/releases/download/")) {
             "SHA-256 должен быть из официального релиза"
         }
-        val request = Request.Builder().url(url).header("User-Agent", "MTProxyFinder-Updater").build()
+        val request = Request.Builder().url(url).header("User-Agent", "NimkuProxy-Updater").build()
         return client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) error("Не удалось загрузить SHA-256")
             val body = response.body ?: error("Пустой SHA-256")
@@ -143,7 +143,7 @@ class ApkDownloader(
     }
 
     private fun sanitizeFileName(value: String): String =
-        value.replace(Regex("[^A-Za-z0-9._-]"), "_").take(120).ifBlank { "MTProxyFinder-update.apk" }
+        value.replace(Regex("[^A-Za-z0-9._-]"), "_").take(120).ifBlank { "NimkuProxy-update.apk" }
 
     private fun sha256(file: File): String {
         val digest = MessageDigest.getInstance("SHA-256")

@@ -63,7 +63,7 @@ object ProxySourceRegistry {
             ),
             UrlListProxySource(
                 id = "mtpf_mirrored",
-                displayName = "MTProxy Finder mirrored feeds",
+                displayName = "Nimku Proxy mirrored feeds",
                 urls =
                     HttpSupport.githubCdnUrls(
                         "nimku",

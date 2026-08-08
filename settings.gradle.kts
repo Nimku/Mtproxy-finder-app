@@ -20,6 +20,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MTProxyFinder"
+rootProject.name = "NimkuProxy"
 include(":app")
 

@@ -79,7 +79,7 @@ object HttpSupport {
                 .url(currentUrl)
                 .header(
                     "User-Agent",
-                    headers["User-Agent"] ?: "MTProxyFinder/${BuildConfig.VERSION_NAME} (Android; MTProto aggregator)"
+                    headers["User-Agent"] ?: "NimkuProxy/${BuildConfig.VERSION_NAME} (Android; MTProto aggregator)"
                 )
                 .header("Accept", headers["Accept"] ?: "*/*")
             headers.forEach { (key, value) ->

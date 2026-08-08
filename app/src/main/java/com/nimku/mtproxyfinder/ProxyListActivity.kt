@@ -281,12 +281,12 @@ class ProxyListActivity : AppCompatActivity() {
                     else "${index + 1}. ${proxy.url}"
                 }
                 .joinToString("\n")
-        return "$body\n\nMTProxy Finder — https://github.com/${BuildConfig.GITHUB_REPO}"
+        return "$body\n\nNimku Proxy — https://github.com/${BuildConfig.GITHUB_REPO}"
     }
 
     private fun copyToClipboard(text: String) {
         val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("MTProxy Finder", text))
+        clipboard.setPrimaryClip(ClipData.newPlainText("Nimku Proxy", text))
     }
 
     @Composable

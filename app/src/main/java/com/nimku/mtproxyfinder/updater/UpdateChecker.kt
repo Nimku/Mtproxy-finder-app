@@ -152,7 +152,7 @@ class UpdateChecker(
                 continue
             }
             if (!name.endsWith(".apk", ignoreCase = true) ||
-                !name.startsWith("MTProxyFinder-", ignoreCase = true) || apkUrl.isNotBlank()
+                !name.startsWith("NimkuProxy-", ignoreCase = true) || apkUrl.isNotBlank()
             ) continue
             apkUrl = url
             apkName = name
@@ -180,7 +180,7 @@ class UpdateChecker(
         val apkName = json.getString("apk_name")
         val releaseUrl = json.getString("release_url")
         require(isExpectedReleaseAssetUrl(apkUrl)) { "Unexpected update APK URL" }
-        require(apkName.startsWith("MTProxyFinder-", true) && apkName.endsWith(".apk", true)) {
+        require(apkName.startsWith("NimkuProxy-", true) && apkName.endsWith(".apk", true)) {
             "Unexpected update APK name"
         }
         val digest = json.optString("sha256", "")
@@ -243,7 +243,7 @@ class UpdateChecker(
         val request = Request.Builder()
             .url(url)
             .header("Accept", "application/vnd.github.v3+json,application/json")
-            .header("User-Agent", "MTProxyFinder-Android/${BuildConfig.VERSION_NAME}")
+            .header("User-Agent", "NimkuProxy-Android/${BuildConfig.VERSION_NAME}")
             .build()
         return client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw IOException("HTTP ${response.code}")

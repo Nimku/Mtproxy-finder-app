@@ -41,7 +41,7 @@
     <string name="sources_summary">Sources: %1$d of %2$d responded</string>
 
     <string name="update_channel_name">應用程式更新</string>
-    <string name="update_notification_title">MTProxy Finder %1$s 可用</string>
+    <string name="update_notification_title">Nimku Proxy %1$s 可用</string>
     <string name="update_notification_body">輕觸以下載並安裝已驗證的 APK</string>
     <string name="settings_auto_update">自動檢查更新</string>
     <string name="settings_auto_update_summary">每 6 小時在背景檢查 GitHub Releases</string>

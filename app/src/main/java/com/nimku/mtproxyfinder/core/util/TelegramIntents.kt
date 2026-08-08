@@ -75,7 +75,7 @@ object TelegramIntents {
 
     fun copyChannelLink(context: Context) {
         val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        cm.setPrimaryClip(ClipData.newPlainText("MTProxy Finder", Constants.TELEGRAM_CHANNEL_URL))
+        cm.setPrimaryClip(ClipData.newPlainText("Nimku Proxy", Constants.TELEGRAM_CHANNEL_URL))
         Toast.makeText(context, R.string.link_copied, Toast.LENGTH_SHORT).show()
     }
 }
