@@ -40,7 +40,7 @@ never sees or stores card/payment details, Telegram handles that.
 4. Copy `.env.example` to `.env` and fill in `BOT_TOKEN`, `GITHUB_TOKEN`,
    `ADMIN_IDS` (your ID from step 3). Leave `HASH_SALT` as-is unless you also
    update the matching constant in the app
-   (`app/src/main/java/com/nimku/mtproxyfinder/core/Constants.kt`,
+   (`app/src/main/java/com/nimku/proxy/core/Constants.kt`,
    `LICENSE_HASH_SALT`) — **the two must always match exactly**, or every
    check will silently report "not subscribed."
 5. Install and run:

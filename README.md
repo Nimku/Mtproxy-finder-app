@@ -137,7 +137,7 @@ work/       background checks and update jobs
 ```
 
 Before your first release build, update the two `TODO`-marked placeholders
-in `app/src/main/java/com/nimku/mtproxyfinder/core/Constants.kt`
+in `app/src/main/java/com/nimku/proxy/core/Constants.kt`
 (`TELEGRAM_CHANNEL_USERNAME`, `TELEGRAM_BOT_USERNAME`) and make sure
 `LICENSE_HASH_SALT` there matches `HASH_SALT` in `bot/.env` exactly.
 
