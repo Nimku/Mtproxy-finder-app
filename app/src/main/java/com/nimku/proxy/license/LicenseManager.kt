@@ -101,14 +101,19 @@ object LicenseManager {
         val id = savedTelegramId(context) ?: return@withContext Result(State.NOT_LINKED, null, usable = false)
         val hash = hashTelegramId(id)
 
-        val urls = HttpSupport.githubCdnUrls(
+        val urls = HttpSupport.freshnessCriticalUrls(
             Constants.LICENSE_REPO_OWNER,
             Constants.LICENSE_REPO_NAME,
             Constants.LICENSE_REPO_REF,
             Constants.LICENSE_STATUS_PATH,
         )
         val downloaded = try {
-            HttpSupport.downloadWithRetry(client, urls, minUsefulBytes = 2)
+            HttpSupport.downloadWithRetry(
+                client,
+                urls,
+                minUsefulBytes = 2,
+                headers = mapOf("Cache-Control" to "no-cache", "Pragma" to "no-cache"),
+            )
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (_: Exception) {
