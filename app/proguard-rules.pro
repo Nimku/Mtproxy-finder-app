@@ -1,0 +1,2 @@
+# MTProxy Finder ProGuard rules
+

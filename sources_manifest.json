@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "sha256": "seed",
+  "sources": [
+    {
+      "id": "solispirit",
+      "name": "SoliSpirit Mega",
+      "kind": "GITHUB_RAW",
+      "owner": "SoliSpirit",
+      "repo": "mtproto",
+      "ref": "master",
+      "path": "all_proxies.txt",
+      "enabled": true
+    },
+    {
+      "id": "tg_mtproxyfinder",
+      "name": "TG @MTProxyFinderApp",
+      "kind": "TELEGRAM_CHANNEL",
+      "channel": "MTProxyFinderApp",
+      "enabled": true
+    }
+  ]
+}
+

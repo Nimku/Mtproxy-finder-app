@@ -1,0 +1,82 @@
+package com.nimku.mtproxyfinder.core.util
+
+import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+import androidx.browser.customtabs.CustomTabsIntent
+import com.google.android.material.snackbar.Snackbar
+import com.nimku.mtproxyfinder.R
+import com.nimku.mtproxyfinder.core.Constants
+
+object TelegramIntents {
+
+    fun openTelegramChannel(context: Context, anchor: android.view.View? = null) {
+        val deep = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.TELEGRAM_CHANNEL_DEEP_LINK))
+        try {
+            context.startActivity(deep)
+            return
+        } catch (_: ActivityNotFoundException) {
+        } catch (_: Exception) {
+        }
+
+        try {
+            CustomTabsIntent.Builder().build()
+                .launchUrl(context, Uri.parse(Constants.TELEGRAM_CHANNEL_URL))
+            return
+        } catch (_: Exception) {
+        }
+
+        try {
+            context.startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse(Constants.TELEGRAM_CHANNEL_URL))
+            )
+            return
+        } catch (_: Exception) {
+        }
+
+        val msg = context.getString(R.string.channel_open_failed)
+        if (anchor != null) {
+            Snackbar.make(anchor, msg, Snackbar.LENGTH_LONG)
+                .setAction(R.string.copy_link) { copyChannelLink(context) }
+                .show()
+        } else {
+            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+            copyChannelLink(context)
+        }
+    }
+
+    /** Opens the subscription bot (Constants.TELEGRAM_BOT_USERNAME) to pay/renew via Stars. */
+    fun openTelegramBot(context: Context) {
+        val botUrl = "https://t.me/${Constants.TELEGRAM_BOT_USERNAME}"
+        val deep = Intent(Intent.ACTION_VIEW, Uri.parse("tg://resolve?domain=${Constants.TELEGRAM_BOT_USERNAME}"))
+        try {
+            context.startActivity(deep)
+            return
+        } catch (_: ActivityNotFoundException) {
+        } catch (_: Exception) {
+        }
+
+        try {
+            CustomTabsIntent.Builder().build().launchUrl(context, Uri.parse(botUrl))
+            return
+        } catch (_: Exception) {
+        }
+
+        try {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(botUrl)))
+        } catch (_: Exception) {
+            Toast.makeText(context, R.string.channel_open_failed, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    fun copyChannelLink(context: Context) {
+        val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        cm.setPrimaryClip(ClipData.newPlainText("MTProxy Finder", Constants.TELEGRAM_CHANNEL_URL))
+        Toast.makeText(context, R.string.link_copied, Toast.LENGTH_SHORT).show()
+    }
+}
+
