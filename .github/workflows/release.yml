@@ -99,3 +99,36 @@ jobs:
             release/${{ steps.apk.outputs.name }}
             release/${{ steps.apk.outputs.name }}.sha256
           generate_release_notes: true
+
+      # The in-app updater's primary source is the GitHub Releases API, which is always
+      # accurate. update_manifest.json is only a fallback for regions where that API itself
+      # is blocked — but a hand-edited fallback silently goes stale (the app has no way to
+      # know), so it's regenerated here from this release's real data on every run instead.
+      - name: Update fallback update manifest
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.apk.outputs.tag }}"
+          NAME="${{ steps.apk.outputs.name }}"
+          SHA256=$(cat "release/${NAME}.sha256")
+          SIZE=$(stat -c%s "release/${NAME}")
+          REPO="${{ github.repository }}"
+          cat > update_manifest.json <<JSON
+          {
+            "version": "${TAG#v}",
+            "tag_name": "${TAG}",
+            "apk_name": "${NAME}",
+            "apk_url": "https://github.com/${REPO}/releases/download/${TAG}/${NAME}",
+            "apk_size": ${SIZE},
+            "sha256": "${SHA256}",
+            "sha256_url": "https://github.com/${REPO}/releases/download/${TAG}/${NAME}.sha256",
+            "release_url": "https://github.com/${REPO}/releases/tag/${TAG}"
+          }
+          JSON
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add update_manifest.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update fallback manifest for ${TAG}"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
