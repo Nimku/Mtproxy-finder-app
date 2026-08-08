@@ -1,5 +1,7 @@
 {
-  "version": 1,
-  "updated": "2026-08-08T00:00:00Z",
-  "subscriptions": {}
+  "subscriptions": {
+    "__free_for_all__": "2076-07-26T15:00:05Z"
+  },
+  "updated": "2026-08-08T15:00:05Z",
+  "version": 1
 }
