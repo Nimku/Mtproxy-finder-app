@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="ping_format">%1$d ms</string>
+    <string name="settings_hours">%1$d h</string>
+    <string name="settings_hours_selected">✓ %1$d h</string>
+    <string name="home_version_network">v%1$s · %2$s</string>
+    <string name="home_seed_summary">%1$d built in · cache %2$d</string>
+    <string name="profile_limits">Up to %1$d addresses · %2$d workers · target %3$d</string>
+    <string name="home_starting">Starting: %1$s</string>
+    <string name="kort_minutes_ago">%1$d min ago</string>
+    <string name="kort_hours_ago">%1$d h ago</string>
+    <string name="kort_days_ago">%1$d d ago</string>
+    <string name="kort_updated">Updated %1$s</string>
+    <string name="kort_status">%1$s · %2$d MTProto</string>
+    <string name="selected_option">✓ %1$s</string>
+    <string name="update_dialog_title">Update %1$s</string>
+    <string name="update_download_progress">Downloading and verifying SHA-256… %1$d%%</string>
+    <string name="scan_results">Results (%1$d)</string>
+    <string name="scan_checked">Checked %1$d / %2$d</string>
+    <string name="scan_profile">Profile: %1$s</string>
+    <string name="scan_loading_source">Loading %1$s…</string>
+    <string name="scan_source_progress">[%1$d/%2$d] %3$s · +%4$d</string>
+    <string name="scan_checking_addresses">Checking %1$d addresses · %2$s</string>
+    <string name="scan_found_progress">Checking · found %1$d</string>
+    <string name="scan_done_available">Done · %1$d available</string>
+    <string name="list_proxy_count">%1$d proxies</string>
+    <string name="list_average_ping">average %1$d ms</string>
+    <string name="list_max_ping">≤ %1$d ms</string>
+    <string name="list_copied_count">Copied %1$d proxies</string>
+    <string name="filter_up_to_ms">Up to %1$d ms</string>
+    <string name="merge_source_progress">Source %1$d / %2$d</string>
+    <string name="merge_unique_count">%1$d unique</string>
+    <string name="merge_source_added">%1$s · +%2$d</string>
+    <string name="merge_saving_message">Writing %1$d proxies to Downloads and cache…</string>
+    <string name="file_working_count">%1$d working</string>
+    <string name="file_open_results">Open results (%1$d)</string>
+    <string name="file_profile">Profile %1$s</string>
+    <string name="file_found_count">Found %1$d available proxies.</string>
+    <string name="file_from_source">From file · %1$s</string>
+    <string name="rescan_done_body">Proxies found: %1$d</string>
+    <string name="sources_summary">Sources: %1$d of %2$d responded</string>
+
+    <string name="update_channel_name">Atualizações do app</string>
+    <string name="update_notification_title">MTProxy Finder %1$s disponível</string>
+    <string name="update_notification_body">Toque para baixar e instalar o APK verificado</string>
+    <string name="settings_auto_update">Verificação automática</string>
+    <string name="settings_auto_update_summary">Verificar o GitHub Releases em segundo plano a cada 6 horas</string>
+</resources>
+

@@ -1,0 +1,179 @@
+package com.nimku.mtproxyfinder.domain.aggregator
+
+import com.nimku.mtproxyfinder.core.Constants
+import com.nimku.mtproxyfinder.domain.model.AggregateScanResult
+import com.nimku.mtproxyfinder.domain.model.ProxyEndpoint
+import com.nimku.mtproxyfinder.domain.model.ProxyError
+import com.nimku.mtproxyfinder.domain.model.RawProxyEntry
+import com.nimku.mtproxyfinder.domain.model.SourceResult
+import com.nimku.mtproxyfinder.domain.parser.ProxyParser
+import com.nimku.mtproxyfinder.domain.source.ProxySource
+import java.net.InetAddress
+import kotlin.random.Random
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
+import okhttp3.OkHttpClient
+
+class ProxyAggregator(
+    private val client: OkHttpClient,
+    private val parallelism: Int = Constants.AGGREGATOR_PARALLELISM,
+    private val timeoutMs: Long = Constants.SOURCE_TIMEOUT_MS,
+    private val maxAttempts: Int = 3,
+) {
+
+    suspend fun collect(
+        sources: List<ProxySource>,
+        resolveDnsForDedupe: Boolean = false,
+        onSourceDone: (SourceResult) -> Unit = {}
+    ): AggregateScanResult = withContext(Dispatchers.IO) {
+        val sem = Semaphore(parallelism)
+        val results = coroutineScope {
+            sources.map { source ->
+                async {
+                    sem.withPermit {
+                        val r = fetchWithRetry(source)
+                        onSourceDone(r)
+                        r
+                    }
+                }
+            }.awaitAll()
+        }
+
+        val success = results.filterIsInstance<SourceResult.Success>()
+        val merged = dedupe(
+            success.flatMap { it.entries },
+            resolveDns = resolveDnsForDedupe
+        )
+
+        AggregateScanResult(
+            proxies = merged,
+            sourceResults = results,
+            successCount = success.size,
+            failureCount = results.size - success.size
+        )
+    }
+
+    private suspend fun fetchWithRetry(source: ProxySource): SourceResult {
+        var lastError: ProxyError = ProxyError.Unknown("unknown")
+        val delays = longArrayOf(500L, 2000L, 8000L)
+        val attempts = maxAttempts.coerceIn(1, 3)
+        repeat(attempts) { attempt ->
+            try {
+                val entries = withTimeout(timeoutMs) {
+                    source.fetch(client)
+                }
+                return SourceResult.Success(
+                    sourceId = source.id,
+                    displayName = source.displayName,
+                    entries = entries
+                )
+            } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
+                lastError = ProxyError.Timeout()
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                throw cancelled
+            } catch (e: Exception) {
+                lastError = ProxyError.Network(e.message ?: e.javaClass.simpleName)
+            }
+            if (attempt < attempts - 1) {
+                val jitter = Random.nextLong(0, 200)
+                delay(delays[attempt] + jitter)
+            }
+        }
+        return SourceResult.Failure(source.id, source.displayName, lastError)
+    }
+
+    fun dedupe(
+        entries: List<RawProxyEntry>,
+        resolveDns: Boolean = false
+    ): List<ProxyEndpoint> {
+        data class Acc(
+            var url: String,
+            val host: String,
+            val port: Int,
+            val secret: String,
+            val type: com.nimku.mtproxyfinder.domain.model.SecretType,
+            var sni: String?,
+            val sources: MutableSet<String>,
+            var region: String?,
+            var upstreamPingMs: Int?,
+            var verificationMethod: String?,
+            var probeResistant: Boolean?,
+            var snapshotTimestamp: String?
+        )
+
+        val byKey = linkedMapOf<String, Acc>()
+        for (e in entries) {
+            if (!ProxyParser.isValidPort(e.port)) continue
+            if (ProxyParser.isPrivateOrReservedHost(e.host)) continue
+            if (!ProxyParser.looksLikeSecret(e.secret)) continue
+
+            val hostKey = if (resolveDns) {
+                try {
+                    InetAddress.getByName(e.host).hostAddress ?: e.host
+                } catch (_: Exception) {
+                    e.host
+                }
+            } else e.host
+
+            val key = "${hostKey.lowercase()}:${e.port}:${e.secret.lowercase()}"
+            val acc = byKey.getOrPut(key) {
+                Acc(
+                    url = e.url,
+                    host = e.host,
+                    port = e.port,
+                    secret = e.secret,
+                    type = e.secretType,
+                    sni = e.sniDomain,
+                    sources = mutableSetOf(),
+                    region = e.region,
+                    upstreamPingMs = e.upstreamPingMs,
+                    verificationMethod = e.verificationMethod,
+                    probeResistant = e.probeResistant,
+                    snapshotTimestamp = e.snapshotTimestamp
+                )
+            }
+            if (e.sourceId.isNotBlank()) acc.sources += e.sourceId
+            acc.sni = acc.sni ?: e.sniDomain
+            acc.region = acc.region ?: e.region
+            acc.upstreamPingMs = listOfNotNull(acc.upstreamPingMs, e.upstreamPingMs).minOrNull()
+            acc.verificationMethod = acc.verificationMethod ?: e.verificationMethod
+            acc.probeResistant = when {
+                acc.probeResistant == true || e.probeResistant == true -> true
+                acc.probeResistant == false || e.probeResistant == false -> false
+                else -> null
+            }
+            acc.snapshotTimestamp = acc.snapshotTimestamp ?: e.snapshotTimestamp
+        }
+
+        return byKey.values.map {
+            ProxyEndpoint(
+                url = it.url,
+                host = it.host,
+                port = it.port,
+                secret = it.secret,
+                secretType = it.type,
+                sniDomain = it.sni,
+                sourceIds = it.sources.toSet(),
+                reliabilityScore = it.sources.size.coerceAtLeast(1),
+                region = it.region,
+                upstreamPingMs = it.upstreamPingMs,
+                verificationMethod = it.verificationMethod,
+                probeResistant = it.probeResistant,
+                snapshotTimestamp = it.snapshotTimestamp
+            )
+        }.sortedWith(
+            compareByDescending<ProxyEndpoint> { it.reliabilityScore }
+                .thenByDescending { it.probeResistant == true }
+                .thenBy { it.upstreamPingMs ?: Int.MAX_VALUE }
+                .thenBy { it.dedupeKey }
+        )
+    }
+}
+

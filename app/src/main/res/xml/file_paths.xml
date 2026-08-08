@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path
+        name="downloads"
+        path="Download/" />
+    <cache-path
+        name="apk_updates"
+        path="updates/" />
+    <files-path
+        name="apk_files"
+        path="updates/" />
+</paths>
+
