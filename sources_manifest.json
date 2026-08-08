@@ -14,9 +14,9 @@
     },
     {
       "id": "tg_nimkuproxy",
-      "name": "TG @NimkuProxyApp",
+      "name": "TG @NimkuProxy",
       "kind": "TELEGRAM_CHANNEL",
-      "channel": "NimkuProxyApp",
+      "channel": "NimkuProxy",
       "enabled": true
     }
   ]
