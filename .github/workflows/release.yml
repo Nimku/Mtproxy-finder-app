@@ -35,14 +35,37 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
-      - name: Build debug APK
+      # Repo secrets required for a signed build: RELEASE_KEYSTORE_BASE64,
+      # RELEASE_KEYSTORE_PASSWORD, RELEASE_KEY_ALIAS, RELEASE_KEY_PASSWORD.
+      # Until those exist, this workflow still runs and falls back to a
+      # debug-signed build so releases keep working while you set them up.
+      - name: Check for release signing secret
+        id: signing
+        run: |
+          if [ -n "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Decode release keystore
+        if: steps.signing.outputs.enabled == 'true'
+        run: |
+          echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/release.keystore"
+
+      - name: Build signed release APK
+        if: steps.signing.outputs.enabled == 'true'
+        env:
+          RELEASE_KEYSTORE_PATH: ${{ runner.temp }}/release.keystore
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: ./gradlew --no-daemon assembleRelease
+
+      - name: Build debug APK (no signing secret set yet)
+        if: steps.signing.outputs.enabled == 'false'
         run: ./gradlew --no-daemon assembleDebug
 
-      # No release signing key is configured yet, so this ships the
-      # debug-signed build (installable via sideload, same as the reference
-      # app's own distribution model). Add a signingConfig + secrets to
-      # app/build.gradle.kts and switch this to assembleRelease once you have
-      # a real release keystore.
       - name: Rename and checksum APK
         id: apk
         run: |
@@ -50,7 +73,12 @@ jobs:
           TAG="${GITHUB_REF_NAME}"
           NAME="NimkuProxy-${TAG}.apk"
           mkdir -p release
-          cp app/build/outputs/apk/debug/app-debug.apk "release/${NAME}"
+          if [ "${{ steps.signing.outputs.enabled }}" = "true" ]; then
+            SRC=$(find app/build/outputs/apk/release -name "*.apk" | head -n1)
+          else
+            SRC="app/build/outputs/apk/debug/app-debug.apk"
+          fi
+          cp "$SRC" "release/${NAME}"
           sha256sum "release/${NAME}" | awk '{print $1}' > "release/${NAME}.sha256"
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
 

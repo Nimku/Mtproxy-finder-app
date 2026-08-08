@@ -143,6 +143,16 @@ in `app/src/main/java/com/nimku/proxy/core/Constants.kt`
 (`TELEGRAM_CHANNEL_USERNAME`, `TELEGRAM_BOT_USERNAME`) and make sure
 `LICENSE_HASH_SALT` there matches `HASH_SALT` in the bot's `.env` exactly.
 
+### Release signing
+
+`assembleRelease` is only signed if `RELEASE_KEYSTORE_PATH`,
+`RELEASE_KEYSTORE_PASSWORD`, `RELEASE_KEY_ALIAS`, and `RELEASE_KEY_PASSWORD`
+are set as environment variables (see `app/build.gradle.kts`) — without them
+it still builds, just unsigned. In CI, `.github/workflows/release.yml` reads
+the equivalent GitHub Actions secrets (`RELEASE_KEYSTORE_BASE64` instead of
+`_PATH`) and falls back to a debug-signed build until those secrets exist.
+The keystore itself is never committed to this repo.
+
 ## License
 
 [MIT](LICENSE)
