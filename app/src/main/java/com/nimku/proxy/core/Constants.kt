@@ -1,8 +1,7 @@
 package com.nimku.proxy.core
 
 object Constants {
-    // TODO: replace with your real Telegram channel username before release.
-    const val TELEGRAM_CHANNEL_USERNAME = "NimkuProxy"
+    const val TELEGRAM_CHANNEL_USERNAME = "SetProxy"
 
     /** Your subscription bot, e.g. "NimkuBot" (no leading @). Used for the paywall deep link. */
     const val TELEGRAM_BOT_USERNAME = "Nimkuproxybot"

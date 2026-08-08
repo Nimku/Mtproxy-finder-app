@@ -51,19 +51,34 @@
     <string name="channel_dismiss">Скрыть</string>
     <string name="channel_open">Открыть канал</string>
     <string name="channel_empty_title">Ничего не нашлось</string>
-    <string name="channel_empty_body">Рабочие прокси регулярно выкладываем в канале @NimkuProxy</string>
+    <string name="channel_empty_body">Рабочие прокси регулярно выкладываем в канале @SetProxy</string>
     <string name="channel_settings_title">Наш Telegram-канал</string>
-    <string name="channel_settings_sub">@NimkuProxy — прокси, апдейты, новости</string>
+    <string name="channel_settings_sub">@SetProxy — прокси, апдейты, новости</string>
     <string name="channel_about_title">Telegram-канал</string>
     <string name="channel_qr_cd">QR-код канала</string>
     <string name="channel_invite_title">Подпишитесь на канал</string>
-    <string name="channel_invite_body">Спасибо, что пользуетесь Nimku Proxy! В @NimkuProxy — свежие прокси и обновления.</string>
+    <string name="channel_invite_body">Спасибо, что пользуетесь Nimku Proxy! В @SetProxy — свежие прокси и обновления.</string>
     <string name="channel_changelog">Changelog в канале</string>
     <string name="channel_open_failed">Не удалось открыть Telegram</string>
     <string name="copy_link">Скопировать ссылку</string>
     <string name="link_copied">Ссылка скопирована</string>
     <string name="later">Позже</string>
     <string name="channel">Канал</string>
+
+    <string name="subscription_title">Нужна подписка</string>
+    <string name="subscription_body">Для Nimku Proxy нужна активная подписка. Откройте наш Telegram-бот, чтобы оформить подписку (цена указана там), затем привяжите тот же аккаунт Telegram ниже.</string>
+    <string name="subscription_id_label">Ваш Telegram ID</string>
+    <string name="subscription_id_hint">Только цифры — тот же аккаунт, с которого будете платить в боте. Узнать его можно через @userinfobot.</string>
+    <string name="subscription_id_invalid">Введите корректный числовой Telegram ID</string>
+    <string name="subscription_id_save">Сохранить</string>
+    <string name="subscription_linked_as">Привязанный Telegram ID: %1$s</string>
+    <string name="subscription_status_active">Подписка активна</string>
+    <string name="subscription_status_grace">Не удалось проверить сейчас — используется последний известный статус</string>
+    <string name="subscription_status_inactive">Активная подписка не найдена</string>
+    <string name="subscription_change_id">Изменить привязанный ID</string>
+    <string name="subscription_open_bot">Открыть бота подписки</string>
+    <string name="subscription_check_now">Я оплатил — проверить сейчас</string>
+    <string name="subscription_checking">Проверка…</string>
 
     <string name="settings_title">Настройки</string>
     <string name="settings_hint">Источники прокси подключаются при мега-скане. Канал — без рекламы и трекеров.</string>
@@ -89,8 +104,6 @@
     <string name="home_ready">Готов к поиску прокси</string>
     <string name="home_version_network">v%1$s · %2$s</string>
     <string name="home_mega_scan">Мега-скан</string>
-    <string name="home_quick_start">Быстрый старт</string>
-    <string name="home_quick_start_subtitle">Выберите один источник или запустите полный сбор</string>
     <string name="home_offline_saved">Офлайн и сохранённое</string>
     <string name="home_offline_saved_subtitle">Результаты остаются доступны без сети</string>
     <string name="home_seed_title">Seed из APK</string>
@@ -116,11 +129,6 @@
     <string name="home_starting">Запуск: %1$s</string>
     <string name="home_empty_saved">Список пуст — сначала запустите проверку</string>
     <string name="home_empty_favorites">Избранное пусто</string>
-    <string name="home_source_solispirit_summary">Большой автообновляемый список</string>
-    <string name="home_source_shablin_summary">Живые MTProto, отсортированные по задержке</string>
-    <string name="home_source_dubblebyte_summary">Дополнительный регулярно обновляемый список</string>
-    <string name="home_source_surfboard_summary">Основной и предварительно проверенный списки</string>
-    <string name="home_source_argh94_summary">Агрегация публичных каналов</string>
 
     <string name="kort_never_updated">ещё не обновлялся</string>
     <string name="kort_minutes_ago">%1$d мин назад</string>
@@ -314,8 +322,6 @@
     <string name="qr_proxy_link">Ссылка MTProto-прокси</string>
     <string name="qr_import_image">Прочитать QR из изображения</string>
     <string name="qr_invalid">На изображении нет корректного QR-кода MTProto-прокси.</string>
-    <string name="home_layout_title">Источники на главном экране</string>
-    <string name="home_layout_summary">Выберите видимые карточки источников и измените их порядок</string>
     <string name="favorite_monitor_title">Следить за избранными прокси</string>
     <string name="favorite_monitor_summary">Проверять избранное каждые 6 часов и предупреждать о неработающих прокси</string>
     <string name="favorite_monitor_channel">Состояние избранных прокси</string>

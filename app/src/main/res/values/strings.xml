@@ -51,13 +51,13 @@
     <string name="channel_dismiss">Dismiss</string>
     <string name="channel_open">Open channel</string>
     <string name="channel_empty_title">Nothing found</string>
-    <string name="channel_empty_body">Working proxies are regularly posted in @NimkuProxy</string>
+    <string name="channel_empty_body">Working proxies are regularly posted in @SetProxy</string>
     <string name="channel_settings_title">Our Telegram channel</string>
-    <string name="channel_settings_sub">@NimkuProxy — proxies, updates, news</string>
+    <string name="channel_settings_sub">@SetProxy — proxies, updates, news</string>
     <string name="channel_about_title">Telegram channel</string>
     <string name="channel_qr_cd">Channel QR code</string>
     <string name="channel_invite_title">Join our channel</string>
-    <string name="channel_invite_body">Thanks for using Nimku Proxy! @NimkuProxy has fresh proxies and updates.</string>
+    <string name="channel_invite_body">Thanks for using Nimku Proxy! @SetProxy has fresh proxies and updates.</string>
     <string name="channel_changelog">Changelog in channel</string>
     <string name="channel_open_failed">Could not open Telegram</string>
     <string name="copy_link">Copy link</string>
@@ -104,8 +104,6 @@
     <string name="home_ready">Ready to find proxies</string>
     <string name="home_version_network">v%1$s · %2$s</string>
     <string name="home_mega_scan">Mega-scan</string>
-    <string name="home_quick_start">Quick start</string>
-    <string name="home_quick_start_subtitle">Choose one source or run the complete collection</string>
     <string name="home_offline_saved">Offline and saved</string>
     <string name="home_offline_saved_subtitle">Results remain available without a network</string>
     <string name="home_seed_title">APK seed</string>
@@ -131,11 +129,6 @@
     <string name="home_starting">Starting: %1$s</string>
     <string name="home_empty_saved">The list is empty — run a check first</string>
     <string name="home_empty_favorites">Favorites are empty</string>
-    <string name="home_source_solispirit_summary">Large automatically updated list</string>
-    <string name="home_source_shablin_summary">Live MTProto proxies sorted by latency</string>
-    <string name="home_source_dubblebyte_summary">Additional regularly updated list</string>
-    <string name="home_source_surfboard_summary">Primary and pre-verified lists</string>
-    <string name="home_source_argh94_summary">Aggregation of public channels</string>
 
     <string name="kort_never_updated">not updated yet</string>
     <string name="kort_minutes_ago">%1$d min ago</string>
@@ -329,8 +322,6 @@
     <string name="qr_proxy_link">MTProto proxy link</string>
     <string name="qr_import_image">Read QR from an image</string>
     <string name="qr_invalid">This image does not contain a valid MTProto proxy QR code.</string>
-    <string name="home_layout_title">Home source layout</string>
-    <string name="home_layout_summary">Choose visible source cards and change their order</string>
     <string name="favorite_monitor_title">Monitor favorite proxies</string>
     <string name="favorite_monitor_summary">Recheck favorites every 6 hours and warn when some stop working</string>
     <string name="favorite_monitor_channel">Favorite proxy status</string>

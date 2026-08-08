@@ -79,6 +79,7 @@ import com.nimku.proxy.data.local.prefs.PromoPreferences
 import com.nimku.proxy.ui.AboutActivity
 import com.nimku.proxy.ui.AppearanceActivity
 import com.nimku.proxy.ui.SettingsActivity
+import com.nimku.proxy.ui.components.QuickLanguageRow
 import com.nimku.proxy.ui.components.channel.ChannelPromoHost
 import com.nimku.proxy.ui.theme.MtproxyFinderTheme
 import com.nimku.proxy.ui.theme.mtSafeScreen
@@ -102,7 +103,6 @@ class MainActivity : AppCompatActivity() {
 
     private var selectedProfile by mutableStateOf(NetworkProfileMode.AUTO)
     private var scanConfiguration by mutableStateOf(ScanConfiguration())
-    private var homeLayout by mutableStateOf(HomeSourceLayout(HomeLayoutPreferences.defaultOrder, emptySet()))
     private var networkLabel by mutableStateOf("")
     private var counts by mutableStateOf(HomeCounts())
     private var statusText by mutableStateOf("")
@@ -141,7 +141,6 @@ class MainActivity : AppCompatActivity() {
         promoPreferences = PromoPreferences(this)
         selectedProfile = savedProfileMode()
         scanConfiguration = ScanPreferences.load(this)
-        homeLayout = HomeLayoutPreferences.load(this)
 
         setContent { MtproxyFinderTheme { HomeScreen() } }
 
@@ -173,7 +172,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         scanConfiguration = ScanPreferences.load(this)
-        homeLayout = HomeLayoutPreferences.load(this)
         refreshHomeState()
         pendingUpdateFile?.let { file ->
             if (apkDownloader.canInstallPackages() && apkDownloader.isVerifiedUpdateFile(file)) {
@@ -192,7 +190,6 @@ class MainActivity : AppCompatActivity() {
     private fun HomeScreen() {
         val profileSettings =
             ScanPreferences.apply(ProfileSettings.forMode(selectedProfile, this), scanConfiguration)
-        val localizedHomeSources = homeSources()
         Scaffold(
             modifier = Modifier.mtSafeScreen(),
             topBar = {
@@ -260,6 +257,7 @@ class MainActivity : AppCompatActivity() {
                         onScan = { startScan(MODE_MEGA, getString(R.string.home_mega_scan)) },
                     )
                 }
+                item { QuickLanguageRow() }
                 item { ScanControlsCard() }
                 if (promoDismissed == false) {
                     item {
@@ -271,20 +269,6 @@ class MainActivity : AppCompatActivity() {
                             },
                         )
                     }
-                }
-                item {
-                    SectionTitle(
-                        stringResource(R.string.home_quick_start),
-                        stringResource(R.string.home_quick_start_subtitle),
-                    )
-                }
-                items(localizedHomeSources, key = HomeSource::id) { source ->
-                    ActionCard(
-                        icon = source.icon,
-                        title = source.title,
-                        subtitle = source.subtitle,
-                        onClick = { startScan(MODE_SOURCE, source.title, source.id) },
-                    )
                 }
                 item {
                     SectionTitle(
@@ -982,51 +966,6 @@ class MainActivity : AppCompatActivity() {
         val seed: Int = 0,
         val cache: Int = 0,
     )
-
-    private data class HomeSource(
-        val id: String,
-        val title: String,
-        val subtitle: String,
-        val icon: ImageVector,
-    )
-
-    @Composable
-    private fun homeSources(): List<HomeSource> {
-        val sources = listOf(
-            HomeSource(
-                "solispirit",
-                "SoliSpirit Mega",
-                stringResource(R.string.home_source_solispirit_summary),
-                Icons.Default.Public,
-            ),
-            HomeSource(
-                "shablin_valid",
-                "Shablin latency",
-                stringResource(R.string.home_source_shablin_summary),
-                Icons.Default.Speed,
-            ),
-            HomeSource(
-                "dubblebyte",
-                "Dubblebyte free MTProto",
-                stringResource(R.string.home_source_dubblebyte_summary),
-                Icons.Default.Public,
-            ),
-            HomeSource(
-                "surfboard",
-                "SurfboardV2ray",
-                stringResource(R.string.home_source_surfboard_summary),
-                Icons.Default.Speed,
-            ),
-            HomeSource(
-                "argh94_scraper",
-                "Argh94 Scraper",
-                stringResource(R.string.home_source_argh94_summary),
-                Icons.Default.Search,
-            ),
-        )
-        val byId = sources.associateBy(HomeSource::id)
-        return homeLayout.order.mapNotNull(byId::get).filterNot { it.id in homeLayout.hidden }
-    }
 
     companion object {
         const val PREFS = "mtproxyfinder_settings"

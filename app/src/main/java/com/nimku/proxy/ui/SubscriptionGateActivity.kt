@@ -4,23 +4,16 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -29,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,9 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.nimku.proxy.MainActivity
 import com.nimku.proxy.R
-import com.nimku.proxy.core.locale.AppLocaleManager
 import com.nimku.proxy.core.util.TelegramIntents
 import com.nimku.proxy.license.LicenseManager
+import com.nimku.proxy.ui.components.QuickLanguageRow
 import com.nimku.proxy.ui.theme.MtproxyFinderTheme
 import com.nimku.proxy.ui.theme.mtSafeScreen
 import kotlinx.coroutines.launch
@@ -79,7 +71,6 @@ class SubscriptionGateActivity : AppCompatActivity() {
         var checking by remember { mutableStateOf(false) }
         var result by remember { mutableStateOf(LicenseManager.cachedResult(this)) }
         var error by remember { mutableStateOf<String?>(null) }
-        var languageDialogVisible by remember { mutableStateOf(false) }
 
         fun goToApp() {
             startActivity(Intent(this@SubscriptionGateActivity, MainActivity::class.java))
@@ -111,22 +102,7 @@ class SubscriptionGateActivity : AppCompatActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                TextButton(
-                    onClick = { languageDialogVisible = true },
-                    modifier = Modifier.align(Alignment.End),
-                ) {
-                    Icon(
-                        Icons.Filled.Language,
-                        contentDescription = stringResource(R.string.settings_language),
-                        modifier = Modifier.size(18.dp),
-                    )
-                    Text(
-                        AppLocaleManager.supportedLocales
-                            .firstOrNull { it.languageTag == AppLocaleManager.currentTag() }
-                            ?.nativeName ?: stringResource(R.string.language_follow_system),
-                        modifier = Modifier.padding(start = 6.dp),
-                    )
-                }
+                QuickLanguageRow()
                 Icon(
                     Icons.Filled.Star,
                     contentDescription = null,
@@ -232,54 +208,6 @@ class SubscriptionGateActivity : AppCompatActivity() {
                     }
                 }
             }
-        }
-
-        if (languageDialogVisible) {
-            val selectedTag = AppLocaleManager.currentTag()
-            AlertDialog(
-                onDismissRequest = { languageDialogVisible = false },
-                title = { Text(stringResource(R.string.language_dialog_title)) },
-                text = {
-                    LazyColumn {
-                        item {
-                            LanguageOptionRow(
-                                title = stringResource(R.string.language_follow_system),
-                                selected = selectedTag == null,
-                                onClick = {
-                                    languageDialogVisible = false
-                                    AppLocaleManager.apply(null)
-                                },
-                            )
-                        }
-                        items(AppLocaleManager.supportedLocales, key = { it.languageTag }) { locale ->
-                            LanguageOptionRow(
-                                title = locale.nativeName,
-                                selected = selectedTag == locale.languageTag,
-                                onClick = {
-                                    languageDialogVisible = false
-                                    AppLocaleManager.apply(locale.languageTag)
-                                },
-                            )
-                        }
-                    }
-                },
-                confirmButton = {
-                    TextButton(onClick = { languageDialogVisible = false }) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                },
-            )
-        }
-    }
-
-    @Composable
-    private fun LanguageOptionRow(title: String, selected: Boolean, onClick: () -> Unit) {
-        Row(
-            modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            RadioButton(selected = selected, onClick = onClick)
-            Text(title, modifier = Modifier.padding(start = 8.dp))
         }
     }
 }

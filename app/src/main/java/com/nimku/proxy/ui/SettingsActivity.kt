@@ -147,11 +147,6 @@ class SettingsActivity : AppCompatActivity() {
                             R.string.qr_summary,
                             QrToolsActivity::class.java,
                         )
-                        SettingsLink(
-                            R.string.home_layout_title,
-                            R.string.home_layout_summary,
-                            HomeLayoutActivity::class.java,
-                        )
                         ChannelSettingsListItem(
                             onClick = { TelegramIntents.openTelegramChannel(this@SettingsActivity) }
                         )
