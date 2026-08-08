@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.nimku.mtproxyfinder"
+    namespace = "com.nimku.proxy"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.nimku.mtproxyfinder"
+        applicationId = "com.nimku.proxy"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
