@@ -14,7 +14,7 @@
     "shablin_valid.txt"
   ],
   "failed": [],
-  "mtproto_merged_count": 520,
+  "mtproto_merged_count": 433,
   "sources": {
     "aliilapro_mtproto.txt": "https://raw.githubusercontent.com/ALIILAPRO/MTProtoProxy/main/mtproto.txt",
     "dubblebyte_all.txt": "https://raw.githubusercontent.com/dubblebyte/free-mtproto-proxies/main/all_proxies.txt",
@@ -30,4 +30,3 @@
     "shablin_valid.txt": "https://raw.githubusercontent.com/shablin/mtproto-proxy/main/data/valid_proxy.txt"
   }
 }
-
