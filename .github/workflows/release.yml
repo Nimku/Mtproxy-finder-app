@@ -5,6 +5,11 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Version tag to publish, e.g. v1.0.0 (only used for manual runs)"
+        required: true
+        default: "v1.0.0"
 
 permissions:
   contents: write
@@ -70,7 +75,10 @@ jobs:
         id: apk
         run: |
           set -euo pipefail
-          TAG="${GITHUB_REF_NAME}"
+          # Real releases are triggered by pushing a "vX.Y.Z" tag, so GITHUB_REF_NAME
+          # is already the right tag. Manual (workflow_dispatch) runs don't have a tag
+          # at all, so they use the "version" input instead.
+          TAG="${{ github.event.inputs.version || github.ref_name }}"
           NAME="NimkuProxy-${TAG}.apk"
           mkdir -p release
           if [ "${{ steps.signing.outputs.enabled }}" = "true" ]; then
@@ -81,10 +89,12 @@ jobs:
           cp "$SRC" "release/${NAME}"
           sha256sum "release/${NAME}" | awk '{print $1}' > "release/${NAME}.sha256"
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.apk.outputs.tag }}
           files: |
             release/${{ steps.apk.outputs.name }}
             release/${{ steps.apk.outputs.name }}.sha256
