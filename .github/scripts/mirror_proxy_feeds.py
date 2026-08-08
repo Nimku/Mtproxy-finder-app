@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / "proxy-feeds"
 MAX_BYTES = 8 * 1024 * 1024
 MAX_LINES = 100_000
-USER_AGENT = "MTProxyFinder-feed-mirror/1.0"
+USER_AGENT = "NimkuProxy-feed-mirror/1.0"
 
 FEEDS = {
     "kort_ru.txt": "https://raw.githubusercontent.com/kort0881/telegram-proxy-collector/main/proxy_ru.txt",

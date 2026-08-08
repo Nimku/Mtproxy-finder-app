@@ -1,5 +1,5 @@
 """
-MTProxy Finder subscription bot.
+Nimku Proxy subscription bot.
 
 Handles Telegram Stars payments and writes/reads license/status.json in the
 app's GitHub repo. This is the ONLY thing that talks to the app's "backend" —
@@ -370,7 +370,7 @@ async def main() -> None:
     bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
     dispatcher = Dispatcher(storage=MemoryStorage())
     dispatcher.include_router(router)
-    log.info("MTProxy Finder bot starting (repo=%s)", os.environ.get("GITHUB_REPO"))
+    log.info("Nimku Proxy bot starting (repo=%s)", os.environ.get("GITHUB_REPO"))
     await dispatcher.start_polling(bot)
 
 

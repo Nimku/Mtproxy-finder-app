@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-MTProxy Finder for exteraGram
+Nimku Proxy for exteraGram
 MTProto proxy finder with self-update.
 """
 
@@ -47,10 +47,10 @@ except Exception:  # pragma: no cover
 
 # --- Plugin Metadata (AST-parsed, keep static) ---
 __id__ = "kupu_proxy"
-__name__ = "MTProxy Finder"
+__name__ = "Nimku Proxy"
 __description__ = (
-    "Поиск и проверка MTProto-прокси (как MTProxy Finder Android).\n"
-    "На экране «Прокси» — строка **MTProxy Finder** (TextCheckCell, как в Proxy Tools).\n"
+    "Поиск и проверка MTProto-прокси (как Nimku Proxy Android).\n"
+    "На экране «Прокси» — строка **Nimku Proxy** (TextCheckCell, как в Proxy Tools).\n"
     "Команды: `.kupu auto` · `.kupu chat` · `.kupu add` · `.kupu del` · `.kupu update`\n"
     "Источники: SoliSpirit, Kort, Argh94, Surfboard, ALIILAPRO…\n"
     "Самообновление с GitHub."
@@ -131,7 +131,7 @@ def http_get(url: str, timeout: int = 18) -> str:
     req = Request(
         url,
         headers={
-            "User-Agent": f"MTProxyFinder-exteraGram/{__version__}",
+            "User-Agent": f"NimkuProxy-exteraGram/{__version__}",
             "Accept": "*/*",
         },
     )
@@ -219,7 +219,7 @@ def is_newer(current: str, latest: str) -> bool:
     return b > a
 
 
-class MTProxyFinderPlugin(BasePlugin):
+class NimkuProxyPlugin(BasePlugin):
     def __init__(self):
         super().__init__()
         self._results: List[Dict[str, Any]] = []
@@ -234,12 +234,12 @@ class MTProxyFinderPlugin(BasePlugin):
     # region lifecycle
 
     def on_plugin_load(self):
-        self.log(f"MTProxy Finder {__version__} loaded")
+        self.log(f"Nimku Proxy {__version__} loaded")
         try:
             self._drawer_id = self.add_menu_item(
                 MenuItemData(
                     menu_type=MenuItemType.DRAWER_MENU,
-                    text="MTProxy Finder",
+                    text="Nimku Proxy",
                     subtext="Строка в меню прокси",
                     icon="msg_proxy",
                     on_click=self._on_drawer_click,
@@ -253,7 +253,7 @@ class MTProxyFinderPlugin(BasePlugin):
             self._chat_id = self.add_menu_item(
                 MenuItemData(
                     menu_type=MenuItemType.CHAT_ACTION_MENU,
-                    text="MTProxy Finder",
+                    text="Nimku Proxy",
                     subtext="Скан / auto",
                     icon="msg_proxy",
                     on_click=self._on_drawer_click,
@@ -276,7 +276,7 @@ class MTProxyFinderPlugin(BasePlugin):
 
     def on_plugin_unload(self):
         self._scanning = False
-        self.log("MTProxy Finder unloaded")
+        self.log("Nimku Proxy unloaded")
 
     # endregion
 
@@ -378,13 +378,13 @@ class MTProxyFinderPlugin(BasePlugin):
                 except Exception:
                     pass
 
-                # --- TextCheckCell MTProxy Finder (с переключателем) ---
+                # --- TextCheckCell Nimku Proxy (с переключателем) ---
                 check = jclass("org.telegram.ui.Cells.TextCheckCell")(ctx)
                 on = bool(plugin.get_setting("kupu_switch_on", False))
                 try:
-                    check.setTextAndCheck("MTProxy Finder", on, True)
+                    check.setTextAndCheck("Nimku Proxy", on, True)
                 except Exception:
-                    check.setTextAndCheck("MTProxy Finder", on, False)
+                    check.setTextAndCheck("Nimku Proxy", on, False)
                 try:
                     check.setBackgroundColor(
                         Theme.getColor(Theme.key_windowBackgroundWhite)
@@ -425,14 +425,14 @@ class MTProxyFinderPlugin(BasePlugin):
                                 v.setChecked(nxt)
                             except Exception:
                                 try:
-                                    check.setTextAndCheck("MTProxy Finder", nxt, True)
+                                    check.setTextAndCheck("Nimku Proxy", nxt, True)
                                 except Exception:
                                     pass
                             if nxt:
-                                p._bulletin("MTProxy Finder: ищу рабочие…")
+                                p._bulletin("Nimku Proxy: ищу рабочие…")
                                 p._one_tap_setup(None)
                             else:
-                                p._bulletin("MTProxy Finder выкл")
+                                p._bulletin("Nimku Proxy выкл")
 
                     class ActionClick(dynamic_proxy(OnClick)):
                         def onClick(self, v):
@@ -441,7 +441,7 @@ class MTProxyFinderPlugin(BasePlugin):
                                 return
                             p._save_kupu_switch(True)
                             try:
-                                check.setTextAndCheck("MTProxy Finder", True, True)
+                                check.setTextAndCheck("Nimku Proxy", True, True)
                             except Exception:
                                 pass
                             p._one_tap_setup(None)
@@ -501,9 +501,9 @@ class MTProxyFinderPlugin(BasePlugin):
                 if attached:
                     plugin._footer_fragments.add(fid)
                     plugin._kupu_check_cell = check
-                    plugin.log("MTProxy Finder footer TextCheckCell OK")
+                    plugin.log("Nimku Proxy footer TextCheckCell OK")
                 else:
-                    plugin.log("MTProxy Finder footer: attach failed")
+                    plugin.log("Nimku Proxy footer: attach failed")
             except Exception as e:
                 if plugin:
                     plugin.log(f"_inject_footer: {e}\n{traceback.format_exc()}")
@@ -613,7 +613,7 @@ class MTProxyFinderPlugin(BasePlugin):
             return
 
         self._scanning = True
-        self._bulletin("MTProxy Finder: делаю всё… скан → добавление → автопереключение")
+        self._bulletin("Nimku Proxy: делаю всё… скан → добавление → автопереключение")
 
         def work():
             try:
@@ -692,7 +692,7 @@ class MTProxyFinderPlugin(BasePlugin):
                     pass
 
                 summary = (
-                    f"✅ MTProxy Finder готово!\n"
+                    f"✅ Nimku Proxy готово!\n"
                     f"• рабочих: **{len(results)}**\n"
                     f"• добавлено: **{added}** (уже были: {skipped})\n"
                     f"• удалено мёртвых: **{deleted}**\n"
@@ -720,7 +720,7 @@ class MTProxyFinderPlugin(BasePlugin):
                 if not act:
                     return
                 b = AlertDialogBuilder(act)
-                b.set_title("MTProxy Finder" if ok else "MTProxy Finder — ошибка")
+                b.set_title("Nimku Proxy" if ok else "Nimku Proxy — ошибка")
                 b.set_message(text)
                 b.set_positive_button("OK", None)
                 b.show()
@@ -829,7 +829,7 @@ class MTProxyFinderPlugin(BasePlugin):
 
     def create_settings(self) -> List[Any]:
         return [
-            Header(text="MTProxy Finder"),
+            Header(text="Nimku Proxy"),
             Text(
                 text=f"Версия плагина: {__version__}",
                 subtext="Самообновление с GitHub · nimku/mtproxy-finder-app",
@@ -850,7 +850,7 @@ class MTProxyFinderPlugin(BasePlugin):
                 default=False,
             ),
             Text(
-                text="Настройки → Прокси → внизу списка «MTProxy Finder»",
+                text="Настройки → Прокси → внизу списка «Nimku Proxy»",
                 subtext="Нативная TextCheckCell (как Proxy Tools)",
             ),
             Divider(),
@@ -878,7 +878,7 @@ class MTProxyFinderPlugin(BasePlugin):
             Divider(),
             Header(text="Как пользоваться"),
             Text(
-                text="Настройки → Прокси → MTProxy Finder / Сделать всё",
+                text="Настройки → Прокси → Nimku Proxy / Сделать всё",
                 subtext="Строки встроены в список (TextCheckCell)",
             ),
             Text(text="`.kupu auto` — то же из чата"),
@@ -1132,13 +1132,13 @@ class MTProxyFinderPlugin(BasePlugin):
                     return
 
                 builder = AlertDialogBuilder(act)
-                builder.set_title("MTProxy Finder")
+                builder.set_title("Nimku Proxy")
                 n = len(self._results)
                 builder.set_message(
                     f"v{__version__}\n"
                     f"Рабочих в кэше: {n}\n\n"
                     f"Настройки → Прокси → прокрути вниз:\n"
-                    f"• **MTProxy Finder** (switch)\n"
+                    f"• **Nimku Proxy** (switch)\n"
                     f"• **Сделать всё**\n\n"
                     f"Или `.kupu auto` в чате."
                 )
@@ -1232,7 +1232,7 @@ class MTProxyFinderPlugin(BasePlugin):
         # В чат пишем ТОЛЬКО по `.kupu chat`. Остальное — bulletin.
         if cmd in ("help", "h", "?"):
             self._bulletin(
-                f"MTProxy Finder v{__version__}: .kupu scan / chat / add / del / auto / use N"
+                f"Nimku Proxy v{__version__}: .kupu scan / chat / add / del / auto / use N"
             )
         elif cmd in ("auto", "all", "go", "setup"):
             self._one_tap_setup(None)
@@ -1395,7 +1395,7 @@ class MTProxyFinderPlugin(BasePlugin):
             self._bulletin("Уже сканирую…")
             return
         self._scanning = True
-        self._bulletin("MTProxy Finder: сканирование…")
+        self._bulletin("Nimku Proxy: сканирование…")
 
         def work():
             try:
@@ -1457,10 +1457,10 @@ class MTProxyFinderPlugin(BasePlugin):
                     self._results = results
 
                 self._bulletin(
-                    f"MTProxy Finder: {len(results)} рабочих (проверено {checked}). "
+                    f"Nimku Proxy: {len(results)} рабочих (проверено {checked}). "
                     f".kupu chat — ссылки в чат"
                     if results
-                    else f"MTProxy Finder: рабочих нет (проверено {checked})",
+                    else f"Nimku Proxy: рабочих нет (проверено {checked})",
                     error=not results,
                 )
             except Exception as e:
@@ -1789,7 +1789,7 @@ class MTProxyFinderPlugin(BasePlugin):
                     f.write(body)
                 written = dl
 
-            self._bulletin(f"MTProxy Finder → v{remote_ver}. Перезапустите клиент.")
+            self._bulletin(f"Nimku Proxy → v{remote_ver}. Перезапустите клиент.")
             self._show_update_done_dialog(remote_ver, written)
             self.log(f"updated from {source_url}")
         except Exception as e:
@@ -1827,7 +1827,7 @@ class MTProxyFinderPlugin(BasePlugin):
             assets = data.get("assets") or []
             for a in assets:
                 name = a.get("name") or ""
-                if name in ("kupu_proxy.py", "kupu_proxy.plugin", "MTProxyFinder.plugin"):
+                if name in ("kupu_proxy.py", "kupu_proxy.plugin", "NimkuProxy.plugin"):
                     url = a.get("browser_download_url")
                     if url:
                         body = http_get(url, timeout=30)
@@ -1841,7 +1841,7 @@ class MTProxyFinderPlugin(BasePlugin):
         for url in RAW_PLUGIN_MIRRORS:
             try:
                 body = http_get(url, timeout=25)
-                if "MTProxyFinderPlugin" not in body and "__id__" not in body:
+                if "NimkuProxyPlugin" not in body and "__id__" not in body:
                     continue
                 m = VERSION_RE.search(body)
                 if not m:

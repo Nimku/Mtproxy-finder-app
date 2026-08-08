@@ -1,2 +1,2 @@
-# MTProxy Finder ProGuard rules
+# Nimku Proxy ProGuard rules
 

@@ -2,10 +2,10 @@ package com.nimku.mtproxyfinder.core
 
 object Constants {
     // TODO: replace with your real Telegram channel username before release.
-    const val TELEGRAM_CHANNEL_USERNAME = "MTProxyFinderApp"
+    const val TELEGRAM_CHANNEL_USERNAME = "NimkuProxyApp"
 
-    /** Your subscription bot, e.g. "MyProxyBot" (no leading @). Used for the paywall deep link. */
-    const val TELEGRAM_BOT_USERNAME = "YourMTProxyFinderBot"
+    /** Your subscription bot, e.g. "NimkuBot" (no leading @). Used for the paywall deep link. */
+    const val TELEGRAM_BOT_USERNAME = "NimkuBot"
     const val TELEGRAM_CHANNEL_URL = "https://t.me/$TELEGRAM_CHANNEL_USERNAME"
     const val TELEGRAM_CHANNEL_DEEP_LINK = "tg://resolve?domain=$TELEGRAM_CHANNEL_USERNAME"
     const val TELEGRAM_CHANNEL_PREVIEW = "https://t.me/s/$TELEGRAM_CHANNEL_USERNAME"

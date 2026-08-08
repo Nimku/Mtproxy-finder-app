@@ -8,7 +8,7 @@ import okhttp3.OkHttpClient
 import org.json.JSONObject
 
 /**
- * Remote source manifest from the MTProxy Finder repo (fallback to seed if unavailable).
+ * Remote source manifest from the Nimku Proxy repo (fallback to seed if unavailable).
  */
 object RemoteManifestLoader {
 

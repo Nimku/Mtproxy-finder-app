@@ -1,11 +1,11 @@
-# MTProxy Finder
+# Nimku Proxy
 
 [![Android CI](https://github.com/nimku/mtproxy-finder-app/actions/workflows/android.yml/badge.svg)](https://github.com/nimku/mtproxy-finder-app/actions/workflows/android.yml)
 [![Latest release](https://img.shields.io/github/v/release/nimku/mtproxy-finder-app)](https://github.com/nimku/mtproxy-finder-app/releases/latest)
 [![Android](https://img.shields.io/badge/Android-7.0%2B-3DDC84?logo=android&logoColor=white)](https://github.com/nimku/mtproxy-finder-app/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-MTProxy Finder is an Android app that collects Telegram MTProto proxies from
+Nimku Proxy is an Android app that collects Telegram MTProto proxies from
 public sources, independently verifies each one with a real MTProto
 handshake, and shows only the ones that actually work — fastest first. It
 runs on a paid monthly subscription (Telegram Stars) with the subscription

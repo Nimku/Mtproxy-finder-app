@@ -37,7 +37,7 @@ class BoundedReadTest {
 
     @Test
     fun realisticChecksumFileIsParsed() {
-        val line = "75c7e237d71a3847ec8b059d3436ec01b5b7704d1212baa770378640c1a8e569  MTProxyFinder-v1.3.3.8.apk\n"
+        val line = "75c7e237d71a3847ec8b059d3436ec01b5b7704d1212baa770378640c1a8e569  NimkuProxy-v1.3.3.8.apk\n"
         assertEquals(line, Buffer().writeUtf8(line).readUtf8Bounded(1_024))
     }
 }

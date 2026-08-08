@@ -1,4 +1,4 @@
-# MTProxy Finder — subscription bot
+# Nimku Proxy — subscription bot
 
 Handles Telegram Stars payments for the app's subscription. This is the only
 piece of infrastructure you run yourself (on your VPS). Everything is

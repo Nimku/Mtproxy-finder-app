@@ -20,7 +20,7 @@ TEXT = {
         "choose_language": "Choose your language:",
         "language_set": "Language set to English.",
         "welcome": (
-            "👋 Welcome to the MTProxy Finder subscription bot.\n\n"
+            "👋 Welcome to the Nimku Proxy subscription bot.\n\n"
             "This bot manages your app subscription. Payment happens here, in "
             "Telegram — the app itself never talks to this bot or to any server "
             "directly, which keeps it working even where direct connections are "
@@ -38,7 +38,7 @@ TEXT = {
         "subscribe_free_button": "🆓 Activate free access",
         "subscribe_button": "⭐ Pay {price} Stars — {days} days",
         "free_mode_notice": "Subscriptions are free right now — tap below to activate.",
-        "invoice_title": "MTProxy Finder — {days} day subscription",
+        "invoice_title": "Nimku Proxy — {days} day subscription",
         "invoice_description": "Unlocks the app for {days} days for Telegram ID {user_id}.",
         "invoice_label": "{days}-day subscription",
         "payment_success": (
@@ -83,7 +83,7 @@ TEXT = {
         "choose_language": "Выберите язык:",
         "language_set": "Язык изменён на русский.",
         "welcome": (
-            "👋 Добро пожаловать в бот подписки MTProxy Finder.\n\n"
+            "👋 Добро пожаловать в бот подписки Nimku Proxy.\n\n"
             "Этот бот управляет подпиской в приложении. Оплата происходит здесь, "
             "в Telegram — само приложение никогда не обращается напрямую к боту "
             "или к серверу, поэтому оно продолжает работать даже там, где прямые "
@@ -101,7 +101,7 @@ TEXT = {
         "subscribe_free_button": "🆓 Активировать бесплатный доступ",
         "subscribe_button": "⭐ Оплатить {price} Stars — {days} дн.",
         "free_mode_notice": "Сейчас подписка бесплатна — нажмите ниже, чтобы активировать.",
-        "invoice_title": "MTProxy Finder — подписка на {days} дн.",
+        "invoice_title": "Nimku Proxy — подписка на {days} дн.",
         "invoice_description": "Открывает приложение на {days} дн. для Telegram ID {user_id}.",
         "invoice_label": "Подписка на {days} дн.",
         "payment_success": (
@@ -146,7 +146,7 @@ TEXT = {
         "choose_language": "زبان خود را انتخاب کنید:",
         "language_set": "زبان به فارسی تغییر کرد.",
         "welcome": (
-            "👋 به ربات اشتراک MTProxy Finder خوش آمدید.\n\n"
+            "👋 به ربات اشتراک Nimku Proxy خوش آمدید.\n\n"
             "این ربات اشتراک برنامه شما را مدیریت می‌کند. پرداخت همینجا در "
             "تلگرام انجام می‌شود — خود برنامه هرگز مستقیماً با این ربات یا هیچ "
             "سروری صحبت نمی‌کند، به همین دلیل حتی جایی که اتصال مستقیم مسدود "
@@ -164,7 +164,7 @@ TEXT = {
         "subscribe_free_button": "🆓 فعال‌سازی دسترسی رایگان",
         "subscribe_button": "⭐ پرداخت {price} استارز — {days} روز",
         "free_mode_notice": "در حال حاضر اشتراک رایگان است — برای فعال‌سازی روی دکمه زیر بزنید.",
-        "invoice_title": "MTProxy Finder — اشتراک {days} روزه",
+        "invoice_title": "Nimku Proxy — اشتراک {days} روزه",
         "invoice_description": "برنامه را برای {days} روز برای شناسه تلگرام {user_id} باز می‌کند.",
         "invoice_label": "اشتراک {days} روزه",
         "payment_success": (

@@ -747,7 +747,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val file =
-                    apkDownloader.download(release, "MTProxyFinder-${release.tagName}.apk") { pct ->
+                    apkDownloader.download(release, "NimkuProxy-${release.tagName}.apk") { pct ->
                         downloadProgress = pct
                     }
                 downloadProgress = 100
