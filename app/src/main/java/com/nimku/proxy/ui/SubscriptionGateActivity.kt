@@ -170,11 +170,15 @@ class SubscriptionGateActivity : AppCompatActivity() {
                                         editingId = false
                                         error = null
                                         result = LicenseManager.cachedResult(this@SubscriptionGateActivity)
+                                        // Linking clears any cached status, so check immediately instead of
+                                        // making the user separately tap "Check now" right after Save.
+                                        lifecycleScope.launch { doRefresh() }
                                     } else {
                                         error = getString(R.string.subscription_id_invalid)
                                     }
                                 },
                                 modifier = Modifier.fillMaxWidth(),
+                                enabled = !checking,
                             ) { Text(stringResource(R.string.subscription_id_save)) }
                         } else {
                             Text(
