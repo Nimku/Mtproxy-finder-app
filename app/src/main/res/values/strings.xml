@@ -51,13 +51,13 @@
     <string name="channel_dismiss">Dismiss</string>
     <string name="channel_open">Open channel</string>
     <string name="channel_empty_title">Nothing found</string>
-    <string name="channel_empty_body">Working proxies are regularly posted in @NimkuProxyApp</string>
+    <string name="channel_empty_body">Working proxies are regularly posted in @NimkuProxy</string>
     <string name="channel_settings_title">Our Telegram channel</string>
-    <string name="channel_settings_sub">@NimkuProxyApp — proxies, updates, news</string>
+    <string name="channel_settings_sub">@NimkuProxy — proxies, updates, news</string>
     <string name="channel_about_title">Telegram channel</string>
     <string name="channel_qr_cd">Channel QR code</string>
     <string name="channel_invite_title">Join our channel</string>
-    <string name="channel_invite_body">Thanks for using Nimku Proxy! @NimkuProxyApp has fresh proxies and updates.</string>
+    <string name="channel_invite_body">Thanks for using Nimku Proxy! @NimkuProxy has fresh proxies and updates.</string>
     <string name="channel_changelog">Changelog in channel</string>
     <string name="channel_open_failed">Could not open Telegram</string>
     <string name="copy_link">Copy link</string>

@@ -51,13 +51,13 @@
     <string name="channel_dismiss">Скрыть</string>
     <string name="channel_open">Открыть канал</string>
     <string name="channel_empty_title">Ничего не нашлось</string>
-    <string name="channel_empty_body">Рабочие прокси регулярно выкладываем в канале @NimkuProxyApp</string>
+    <string name="channel_empty_body">Рабочие прокси регулярно выкладываем в канале @NimkuProxy</string>
     <string name="channel_settings_title">Наш Telegram-канал</string>
-    <string name="channel_settings_sub">@NimkuProxyApp — прокси, апдейты, новости</string>
+    <string name="channel_settings_sub">@NimkuProxy — прокси, апдейты, новости</string>
     <string name="channel_about_title">Telegram-канал</string>
     <string name="channel_qr_cd">QR-код канала</string>
     <string name="channel_invite_title">Подпишитесь на канал</string>
-    <string name="channel_invite_body">Спасибо, что пользуетесь Nimku Proxy! В @NimkuProxyApp — свежие прокси и обновления.</string>
+    <string name="channel_invite_body">Спасибо, что пользуетесь Nimku Proxy! В @NimkuProxy — свежие прокси и обновления.</string>
     <string name="channel_changelog">Changelog в канале</string>
     <string name="channel_open_failed">Не удалось открыть Telegram</string>
     <string name="copy_link">Скопировать ссылку</string>

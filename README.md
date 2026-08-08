@@ -18,10 +18,12 @@ server, so it keeps working in places where direct connections get blocked.
 | Path | What it is |
 |---|---|
 | `app/` | The Android app (Kotlin, Jetpack Compose, Material 3) |
-| `bot/` | The Telegram bot that sells subscriptions and manages `license/status.json` — see [`bot/README.md`](bot/README.md) |
-| `license/status.json` | The subscription status file the app reads and the bot writes |
+| `license/status.json` | The subscription status file the app reads and the (private) bot writes |
 | `.github/workflows/mirror-proxy-feeds.yml` | Scheduled job that mirrors public proxy feeds into `proxy-feeds/` |
 | `exteragram/` | Optional companion plugin for the exteraGram Telegram client |
+
+The Telegram subscription bot is deployed separately (not part of this
+public repo) and is the only thing with write access to `license/status.json`.
 
 ## How the pieces talk to each other
 
@@ -52,7 +54,7 @@ sees or stores card details.
 
 Pricing, subscription length, and even a "free for everyone" toggle are all
 controlled from inside Telegram via the bot's `/admin` panel — no code
-changes or redeploys needed. See [`bot/README.md`](bot/README.md).
+changes or redeploys needed.
 
 ## App features
 
@@ -139,13 +141,7 @@ work/       background checks and update jobs
 Before your first release build, update the two `TODO`-marked placeholders
 in `app/src/main/java/com/nimku/proxy/core/Constants.kt`
 (`TELEGRAM_CHANNEL_USERNAME`, `TELEGRAM_BOT_USERNAME`) and make sure
-`LICENSE_HASH_SALT` there matches `HASH_SALT` in `bot/.env` exactly.
-
-## Credits
-
-Built on top of [KupuProxy](https://github.com/Kirillka645/KupuProxy)
-(MIT-licensed) — see [`LICENSE`](LICENSE) for the original copyright notice,
-retained as required by its license.
+`LICENSE_HASH_SALT` there matches `HASH_SALT` in the bot's `.env` exactly.
 
 ## License
 
