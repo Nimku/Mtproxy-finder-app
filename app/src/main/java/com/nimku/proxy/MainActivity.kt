@@ -743,9 +743,11 @@ class MainActivity : AppCompatActivity() {
                 }
                 apkDownloader.installApk(this@MainActivity, file)
                 downloadProgress = -1
-            } catch (_: Exception) {
+            } catch (e: Exception) {
                 downloadProgress = -1
-                downloadError = getString(R.string.update_download_error)
+                downloadError = e.message?.let {
+                    getString(R.string.update_download_error) + ": " + it
+                } ?: getString(R.string.update_download_error)
             }
         }
     }
