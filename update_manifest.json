@@ -1,10 +1,10 @@
 {
-  "version": "1.1.0",
-  "tag_name": "v1.1.0",
-  "apk_name": "NimkuProxy-v1.1.0.apk",
-  "apk_url": "https://github.com/Nimku/Mtproxy-finder-app/releases/download/v1.1.0/NimkuProxy-v1.1.0.apk",
-  "apk_size": 24112981,
-  "sha256": "2e053e5c66e33e43373613d1517c5c39fed31e7b9afa50b7949673b80cea66d5",
-  "sha256_url": "https://github.com/Nimku/Mtproxy-finder-app/releases/download/v1.1.0/NimkuProxy-v1.1.0.apk.sha256",
-  "release_url": "https://github.com/Nimku/Mtproxy-finder-app/releases/tag/v1.1.0"
+  "version": "1.1.2",
+  "tag_name": "v1.1.2",
+  "apk_name": "NimkuProxy-v1.1.2.apk",
+  "apk_url": "https://github.com/Nimku/Mtproxy-finder-app/releases/download/v1.1.2/NimkuProxy-v1.1.2.apk",
+  "apk_size": 16483809,
+  "sha256": "f2a1dd66f8809b676cfccce2b0720606d705db3bb27729d6305ace2c4080e4e7",
+  "sha256_url": "https://github.com/Nimku/Mtproxy-finder-app/releases/download/v1.1.2/NimkuProxy-v1.1.2.apk.sha256",
+  "release_url": "https://github.com/Nimku/Mtproxy-finder-app/releases/tag/v1.1.2"
 }
