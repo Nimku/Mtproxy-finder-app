@@ -112,21 +112,29 @@ object ProxySourceRegistry {
                         "all_proxies.txt",
                     ),
             ),
+            // The priority source (Constants.PRIORITY_SOURCE_ID): its first
+            // PRIORITY_SOURCE_COUNT entries are checked and shown ahead of every other result,
+            // so it has to reflect what upstream publishes *now*. Read upstream directly and
+            // freshness-first: leading with our own proxy-feeds mirror pinned the list to a
+            // snapshot that only refreshes on a schedule, and jsDelivr/githack cache a branch
+            // ref for hours on top of that — together that served hours-old "priority" proxies.
+            // Both cached mirrors stay on as fallbacks for regions where raw.githubusercontent
+            // is blocked.
             UrlListProxySource(
                 id = "dubblebyte",
                 displayName = "Dubblebyte free MTProto",
                 urls =
-                    HttpSupport.githubCdnUrls(
-                        "nimku",
-                        "mtproxy-finder-app",
+                    HttpSupport.freshnessCriticalUrls(
+                        "dubblebyte",
+                        "free-mtproto-proxies",
                         "main",
-                        "proxy-feeds/dubblebyte_all.txt",
+                        "all_proxies.txt",
                     ) +
                         HttpSupport.githubCdnUrls(
-                            "dubblebyte",
-                            "free-mtproto-proxies",
+                            "nimku",
+                            "mtproxy-finder-app",
                             "main",
-                            "all_proxies.txt",
+                            "proxy-feeds/dubblebyte_all.txt",
                         ),
             ),
             // Отдельные каналы — off by default (mega уже покрывает)
