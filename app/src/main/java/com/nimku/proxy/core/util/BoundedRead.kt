@@ -4,27 +4,25 @@ import java.io.IOException
 import okio.BufferedSource
 
 /**
- * Читает поток целиком, отвергая ответы больше [maxBytes].
+ * Reads a stream in full, rejecting responses larger than [maxBytes].
  *
- * ВАЖНО: okio-функция `readByteArray(byteCount)` — это ТОЧНОЕ чтение: она бросает
- * `EOFException`, если в потоке меньше, чем `byteCount` байт. Использование её как
- * «лимита» ломает любой нормальный (маленький) ответ: например JSON релиза в 3 КБ
- * при лимите 512 КБ падал с EOFException. Именно из-за этого в 1.3.3.3+ перестала
- * работать проверка обновлений.
+ * IMPORTANT: okio's `readByteArray(byteCount)` is an EXACT read — it throws `EOFException` when
+ * the stream holds fewer than `byteCount` bytes. Using it as a "limit" breaks every normal
+ * (small) response: a 3 KB release JSON against a 512 KB limit used to fail with EOFException,
+ * which is exactly why update checks stopped working in earlier builds.
  *
- * Здесь лимит проверяется через [BufferedSource.request], который возвращает
- * `false`, если байт меньше запрошенного, и только потом читается весь ответ.
+ * So the limit is tested with [BufferedSource.request], which returns `false` when fewer bytes
+ * are available, and only then is the whole response read.
  */
 @Throws(IOException::class)
 fun BufferedSource.readAllBounded(maxBytes: Long): ByteArray {
     require(maxBytes > 0) { "maxBytes must be positive" }
-    // request() вернёт true только если доступно СТРОГО больше лимита — значит ответ слишком большой.
-    if (request(maxBytes + 1)) throw IOException("Ответ слишком большой (> $maxBytes байт)")
+    // request() returns true only when STRICTLY more than the limit is available — too large.
+    if (request(maxBytes + 1)) throw IOException("Response is too large (> $maxBytes bytes)")
     return readByteArray()
 }
 
-/** То же, но результат сразу как UTF-8 строка. */
+/** Same, but returns the result directly as a UTF-8 string. */
 @Throws(IOException::class)
 fun BufferedSource.readUtf8Bounded(maxBytes: Long): String =
     readAllBounded(maxBytes).toString(Charsets.UTF_8)
-
