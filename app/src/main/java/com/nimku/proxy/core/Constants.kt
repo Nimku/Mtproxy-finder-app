@@ -39,13 +39,20 @@ object Constants {
 
     /**
      * Salt mixed into the locally-entered Telegram user ID before hashing (see
-     * LicenseManager.hashTelegramId). MUST exactly match HASH_SALT in bot/bot.py, or every
-     * check will report "not subscribed" even for a paying user. Not a secret: it only makes
-     * the public license/status.json harder to casually reverse into a raw user-ID list, it does
-     * not gate write access (that's the bot's private GitHub token, which never ships here).
-     * TODO: change this to your own random string before release, and keep it in sync with the bot.
+     * LicenseManager.hashTelegramId). MUST exactly match HASH_SALT in the bot's .env, or every
+     * check will report "not subscribed" even for a paying user.
+     *
+     * This is not a secret and cannot be one — it ships inside the APK, so anyone willing to
+     * decompile can recover it. All it does is stop a casual reader of the public
+     * license/status.json from checking "is <telegram id> a subscriber?" by hashing guesses
+     * against a well-known default. It does not gate write access; that's the bot's private
+     * GitHub token, which never ships here.
+     *
+     * Changing this invalidates every existing entry in license/status.json (they were hashed
+     * with the old salt), so it must be paired with a migration that re-adds current subscribers
+     * under the new salt — never change it on its own.
      */
-    const val LICENSE_HASH_SALT = "mtpf-v1-change-this-salt"
+    const val LICENSE_HASH_SALT = "nimku-97vhjrUAkaLVu5Pi7aZr8iNv4LRMgNDs"
 
     /** Subscription length granted per successful payment; must match bot/bot.py. */
     const val LICENSE_PERIOD_DAYS = 30
