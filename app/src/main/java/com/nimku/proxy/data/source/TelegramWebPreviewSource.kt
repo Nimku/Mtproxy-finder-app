@@ -30,12 +30,13 @@ class TelegramWebPreviewSource(
             headers = TelegramBypass.browserHeaders(),
             minUsefulBytes = 80,
             perUrlTimeoutMs = 6_500L,
-            overallTimeoutMs = 10_000L
+            overallTimeoutMs = 10_000L,
+            contentValidator = { body ->
+                ProxyParser.parse(TelegramMegaSource.normalizeBody(body)).isNotEmpty()
+            },
         ) ?: return emptyList()
 
         val body = TelegramMegaSource.normalizeBody(raced.first)
-        val parsed = ProxyParser.parse(body, id, displayName)
-        if (parsed.isNotEmpty()) return parsed
         return ProxyParser.parse(body, id, displayName)
     }
 }

@@ -59,10 +59,7 @@ object ProxyCache {
     }
 
     fun saveRawList(context: Context, proxies: List<String>) {
-        try {
-            File(cacheDir(context), CACHE_FILE).writeText(proxies.joinToString("\n"))
-        } catch (_: Exception) {
-        }
+        atomicWrite(File(cacheDir(context), CACHE_FILE), proxies.joinToString("\n"))
     }
 
     fun loadRawList(context: Context): List<String> {
@@ -216,14 +213,11 @@ object ProxyCache {
         proxies: List<ProxyWithPing>
     ) {
         val name = if (profile == NetworkProfileMode.MOBILE) LAST_MOBILE else LAST_WIFI
-        try {
-            val arr = JSONArray()
-            proxies.take(200).forEach { p ->
-                arr.put(JSONObject().put("url", p.url).put("ping", p.pingMs))
-            }
-            File(cacheDir(context), name).writeText(arr.toString())
-        } catch (_: Exception) {
+        val arr = JSONArray()
+        proxies.take(200).forEach { p ->
+            arr.put(JSONObject().put("url", p.url).put("ping", p.pingMs))
         }
+        atomicWrite(File(cacheDir(context), name), arr.toString())
     }
 
     fun loadWorking(context: Context, profile: NetworkProfileMode): List<ProxyWithPing> {
@@ -257,12 +251,9 @@ object ProxyCache {
     }
 
     fun saveFavorites(context: Context, favorites: Set<String>) {
-        try {
-            val arr = JSONArray()
-            favorites.forEach { arr.put(it) }
-            File(cacheDir(context), FAVORITES).writeText(arr.toString())
-        } catch (_: Exception) {
-        }
+        val arr = JSONArray()
+        favorites.forEach { arr.put(it) }
+        atomicWrite(File(cacheDir(context), FAVORITES), arr.toString())
     }
 
     fun toggleFavorite(context: Context, url: String): Boolean {

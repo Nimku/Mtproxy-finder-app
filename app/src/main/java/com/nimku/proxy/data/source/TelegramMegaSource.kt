@@ -103,6 +103,7 @@ class TelegramMegaSource(override val enabledByDefault: Boolean = true) : ProxyS
                 minUsefulBytes = 80,
                 perUrlTimeoutMs = 6_500L,
                 overallTimeoutMs = 9_000L,
+                contentValidator = { body -> ProxyParser.parse(normalizeBody(body)).isNotEmpty() },
             ) ?: return emptyList()
         return ProxyParser.parse(normalizeBody(raced.first), id, "TG @$channel")
     }

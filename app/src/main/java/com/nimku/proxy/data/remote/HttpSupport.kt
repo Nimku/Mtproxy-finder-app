@@ -168,13 +168,22 @@ object HttpSupport {
         return null
     }
 
+    /**
+     * @param contentValidator Extra opt-in check applied on top of [looksLikeBlockedPage]. A
+     * mirror can return a "successful," non-blocked-looking response that still has nothing
+     * usable in it (an empty list, an unrelated page); passing a validator (e.g. "does this
+     * actually parse into proxy entries") stops that empty-but-fast mirror from winning the race
+     * over a slightly slower one that had real data. Left null, behavior is unchanged — existing
+     * callers (like the license check) are unaffected.
+     */
     suspend fun downloadRace(
         client: OkHttpClient,
         urls: List<String>,
         headers: Map<String, String> = emptyMap(),
         minUsefulBytes: Int = 16,
         perUrlTimeoutMs: Long = 7_000L,
-        overallTimeoutMs: Long = 12_000L
+        overallTimeoutMs: Long = 12_000L,
+        contentValidator: ((String) -> Boolean)? = null
     ): Pair<String, String>? = coroutineScope {
         val candidates = urls.distinct()
         if (candidates.isEmpty()) return@coroutineScope null
@@ -184,7 +193,10 @@ object HttpSupport {
                 val result = withTimeoutOrNull(perUrlTimeoutMs) {
                     try {
                         val (body, _) = downloadText(client, url, headers = headers)
-                        body?.takeIf { it.length >= minUsefulBytes && !looksLikeBlockedPage(it) }?.let { it to url }
+                        body
+                            ?.takeIf { it.length >= minUsefulBytes && !looksLikeBlockedPage(it) }
+                            ?.takeIf { contentValidator == null || contentValidator(it) }
+                            ?.let { it to url }
                     } catch (cancelled: CancellationException) {
                         throw cancelled
                     } catch (_: Exception) {
