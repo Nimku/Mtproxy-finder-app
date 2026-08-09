@@ -42,7 +42,7 @@ class ApkDownloader(
     ): File = withContext(Dispatchers.IO) {
         validateRelease(release)
         val expectedDigest = release.sha256 ?: release.sha256Url?.let(::downloadDigest)
-            ?: throw IllegalStateException("В релизе отсутствует SHA-256 для APK")
+            ?: throw IllegalStateException("Release has no SHA-256 for the APK")
 
         val dir = File(context.cacheDir, "updates").apply { mkdirs() }
         dir.listFiles()?.forEach(File::delete)
@@ -56,12 +56,12 @@ class ApkDownloader(
                 .build()
 
             client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) error("Ошибка загрузки HTTP ${response.code}")
-                val body = response.body ?: error("Пустой ответ")
+                if (!response.isSuccessful) error("Download failed: HTTP ${response.code}")
+                val body = response.body ?: error("Empty response")
                 val total = body.contentLength()
-                require(total < 0 || total in MIN_APK_BYTES..MAX_APK_BYTES) { "Некорректный размер APK" }
+                require(total < 0 || total in MIN_APK_BYTES..MAX_APK_BYTES) { "Invalid APK size" }
                 if (release.apkSize > 0 && total > 0) {
-                    require(total == release.apkSize) { "Размер APK не совпадает с релизом" }
+                    require(total == release.apkSize) { "APK size does not match the release" }
                 }
 
                 var read = 0L
@@ -72,7 +72,7 @@ class ApkDownloader(
                             val count = input.read(buffer)
                             if (count < 0) break
                             read += count
-                            require(read <= MAX_APK_BYTES) { "APK слишком большой" }
+                            require(read <= MAX_APK_BYTES) { "APK is too large" }
                             output.write(buffer, 0, count)
                             if (total > 0) {
                                 val percent = ((read * 100) / total).toInt().coerceIn(0, 99)
@@ -83,9 +83,9 @@ class ApkDownloader(
                 }
             }
 
-            require(outFile.length() in MIN_APK_BYTES..MAX_APK_BYTES) { "APK повреждён или имеет неверный размер" }
-            if (release.apkSize > 0) require(outFile.length() == release.apkSize) { "Размер APK изменился" }
-            require(sha256(outFile).equals(expectedDigest, ignoreCase = true)) { "SHA-256 APK не совпадает" }
+            require(outFile.length() in MIN_APK_BYTES..MAX_APK_BYTES) { "APK is corrupted or has the wrong size" }
+            if (release.apkSize > 0) require(outFile.length() == release.apkSize) { "APK size changed during download" }
+            require(sha256(outFile).equals(expectedDigest, ignoreCase = true)) { "APK SHA-256 does not match" }
             verifyPackageAndSigner(outFile, release.tagName)
             withContext(Dispatchers.Main) { onProgress(100) }
             outFile
@@ -95,27 +95,38 @@ class ApkDownloader(
         }
     }
 
+    /**
+     * GitHub serves asset URLs using the repository's canonical casing (e.g.
+     * "Nimku/Mtproxy-finder-app"), which won't necessarily match how GITHUB_REPO is written in
+     * the build config. Host and repo path are case-insensitive for this purpose, so compare
+     * that way — a case-sensitive check here rejects our own official release URL and makes every
+     * in-app update fail before a single byte is requested. Must stay in sync with
+     * UpdateChecker.isExpectedReleaseAssetUrl(), which already ignores case.
+     */
+    private fun isOfficialReleaseAssetUrl(url: String): Boolean =
+        url.startsWith("https://github.com/${BuildConfig.GITHUB_REPO}/releases/download/", ignoreCase = true)
+
     private fun validateRelease(release: GitHubRelease) {
-        require(release.apkUrl.startsWith("https://github.com/${BuildConfig.GITHUB_REPO}/releases/download/")) {
-            "APK должен быть из официального GitHub Releases"
+        require(isOfficialReleaseAssetUrl(release.apkUrl)) {
+            "APK must come from the official GitHub Releases"
         }
         require(release.apkName.startsWith("NimkuProxy-", true) && release.apkName.endsWith(".apk", true)) {
-            "Неожиданное имя APK"
+            "Unexpected APK name"
         }
-        require(release.apkSize < 0 || release.apkSize in MIN_APK_BYTES..MAX_APK_BYTES) { "Некорректный размер APK" }
+        require(release.apkSize < 0 || release.apkSize in MIN_APK_BYTES..MAX_APK_BYTES) { "Invalid APK size" }
     }
 
     private fun downloadDigest(url: String): String {
-        require(url.startsWith("https://github.com/${BuildConfig.GITHUB_REPO}/releases/download/")) {
-            "SHA-256 должен быть из официального релиза"
+        require(isOfficialReleaseAssetUrl(url)) {
+            "SHA-256 must come from the official release"
         }
         val request = Request.Builder().url(url).header("User-Agent", "NimkuProxy-Updater").build()
         return client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) error("Не удалось загрузить SHA-256")
-            val body = response.body ?: error("Пустой SHA-256")
-            require(body.contentLength() < 0 || body.contentLength() <= 1_024) { "SHA-256 файл слишком большой" }
+            if (!response.isSuccessful) error("Could not download SHA-256")
+            val body = response.body ?: error("Empty SHA-256")
+            require(body.contentLength() < 0 || body.contentLength() <= 1_024) { "SHA-256 file is too large" }
             val text = body.source().readUtf8Bounded(1_024)
-            SHA256_REGEX.find(text)?.value ?: error("Некорректный SHA-256")
+            SHA256_REGEX.find(text)?.value ?: error("Invalid SHA-256")
         }
     }
 
@@ -125,10 +136,10 @@ class ApkDownloader(
             PackageManager.GET_SIGNING_CERTIFICATES
         } else PackageManager.GET_SIGNATURES
         val archive = context.packageManager.getPackageArchiveInfo(file.absolutePath, flags)
-            ?: error("Файл не является APK")
-        require(archive.packageName == context.packageName) { "Неверный package name" }
+            ?: error("File is not an APK")
+        require(archive.packageName == context.packageName) { "Wrong package name" }
         val archiveVersion = archive.versionName.orEmpty().removePrefix("v")
-        require(archiveVersion == expectedVersion.removePrefix("v")) { "Версия APK не совпадает с релизом" }
+        require(archiveVersion == expectedVersion.removePrefix("v")) { "APK version does not match the release" }
 
         val installed = context.packageManager.getPackageInfo(context.packageName, flags)
         val archiveCerts = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -138,7 +149,7 @@ class ApkDownloader(
             installed.signingInfo?.apkContentsSigners?.map { sha256(it.toByteArray()) }.orEmpty()
         } else installed.signatures?.map { sha256(it.toByteArray()) }.orEmpty()
         require(archiveCerts.isNotEmpty() && archiveCerts.any(installedCerts::contains)) {
-            "APK подписан другим сертификатом"
+            "APK is signed with a different certificate"
         }
     }
 
@@ -182,7 +193,7 @@ class ApkDownloader(
     }
 
     fun installApk(activity: Activity, apkFile: File) {
-        require(isVerifiedUpdateFile(apkFile)) { "APK обновления недоступен" }
+        require(isVerifiedUpdateFile(apkFile)) { "Update APK is unavailable" }
         val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", apkFile)
         activity.startActivity(
             Intent(Intent.ACTION_VIEW).apply {
