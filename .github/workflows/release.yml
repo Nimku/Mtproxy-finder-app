@@ -88,6 +88,15 @@ jobs:
           fi
           cp "$SRC" "release/${NAME}"
           sha256sum "release/${NAME}" | awk '{print $1}' > "release/${NAME}.sha256"
+          # Byte-identical copy under a version-free name, so
+          # /releases/latest/download/NimkuProxy.apk is a permanent one-tap download link
+          # (GitHub's /latest/download/ needs an exact filename, and the versioned one
+          # changes every release). The name deliberately has NO hyphen after "NimkuProxy":
+          # UpdateChecker only accepts assets matching "NimkuProxy-*.apk", so this copy stays
+          # invisible to the in-app updater and can't compete with the versioned asset.
+          # It also gets no .sha256 companion on purpose — UpdateChecker takes the last
+          # "*.apk.sha256" it sees, so a second one could shadow the real digest.
+          cp "$SRC" "release/NimkuProxy.apk"
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
 
@@ -98,6 +107,7 @@ jobs:
           files: |
             release/${{ steps.apk.outputs.name }}
             release/${{ steps.apk.outputs.name }}.sha256
+            release/NimkuProxy.apk
           generate_release_notes: true
 
       # The in-app updater's primary source is the GitHub Releases API, which is always
