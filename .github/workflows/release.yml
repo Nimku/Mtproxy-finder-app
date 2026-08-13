@@ -99,6 +99,64 @@ jobs:
           cp "$SRC" "release/NimkuProxy.apk"
           echo "name=${NAME}" >> "$GITHUB_OUTPUT"
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "sha256=$(cat "release/${NAME}.sha256")" >> "$GITHUB_OUTPUT"
+
+      # A freshly built APK nobody has ever scanned shows up on VirusTotal as an *unknown* file,
+      # which reads as more suspicious to a cautious user than a clean report does — that was
+      # real feedback from people who refused to install it. Submitting the build here means a
+      # report for this exact SHA256 already exists before anyone downloads it, so the link in
+      # the release notes always resolves to a genuine scan instead of "file not found".
+      #
+      # Needs a VIRUSTOTAL_API_KEY repo secret (free key from virustotal.com is enough). Without
+      # it the step still publishes the report URL — the digest determines it — and just skips
+      # the upload. Nothing here is allowed to fail the release.
+      - name: Submit APK to VirusTotal
+        id: vt
+        continue-on-error: true
+        env:
+          VT_API_KEY: ${{ secrets.VIRUSTOTAL_API_KEY }}
+        run: |
+          set -uo pipefail
+          NAME="${{ steps.apk.outputs.name }}"
+          SHA256=$(cat "release/${NAME}.sha256")
+          # The GUI URL is keyed by the file digest, so it is correct whether the upload below
+          # succeeds, fails, or is skipped — VirusTotal may already know this file anyway.
+          echo "url=https://www.virustotal.com/gui/file/${SHA256}" >> "$GITHUB_OUTPUT"
+          echo "summary=" >> "$GITHUB_OUTPUT"
+
+          if [ -z "${VT_API_KEY}" ]; then
+            echo "No VIRUSTOTAL_API_KEY secret set — skipping upload, report link still published."
+            exit 0
+          fi
+
+          ANALYSIS_ID=$(curl -sS -X POST \
+            -H "x-apikey: ${VT_API_KEY}" \
+            -F "file=@release/${NAME}" \
+            https://www.virustotal.com/api/v3/files \
+            | jq -r '.data.id // empty')
+
+          if [ -z "${ANALYSIS_ID}" ]; then
+            echo "Upload did not return an analysis id — report link still published."
+            exit 0
+          fi
+          echo "Uploaded. Analysis id: ${ANALYSIS_ID}"
+
+          # Scans typically finish in 1-3 minutes. Poll at 30s (well inside the free key's
+          # 4 requests/minute limit) and give up quietly rather than holding up the release.
+          for _ in $(seq 1 10); do
+            sleep 30
+            RESP=$(curl -sS -H "x-apikey: ${VT_API_KEY}" \
+              "https://www.virustotal.com/api/v3/analyses/${ANALYSIS_ID}")
+            if [ "$(echo "${RESP}" | jq -r '.data.attributes.status // empty')" != "completed" ]; then
+              continue
+            fi
+            FLAGGED=$(echo "${RESP}" | jq -r '
+              (.data.attributes.stats.malicious // 0) + (.data.attributes.stats.suspicious // 0)')
+            TOTAL=$(echo "${RESP}" | jq -r '[.data.attributes.stats[]] | add // 0')
+            echo "summary=${FLAGGED} / ${TOTAL} security vendors flagged this file" >> "$GITHUB_OUTPUT"
+            echo "Scan complete: ${FLAGGED}/${TOTAL} flagged."
+            break
+          done
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -109,6 +167,29 @@ jobs:
             release/${{ steps.apk.outputs.name }}.sha256
             release/NimkuProxy.apk
           generate_release_notes: true
+          body: |
+            **Nimku Proxy is free.** No subscription, no payment, no account.
+
+            ### Verify this download before installing
+
+            - **VirusTotal report:** ${{ steps.vt.outputs.url }}
+              ${{ steps.vt.outputs.summary }}
+            - **SHA-256:** `${{ steps.apk.outputs.sha256 }}`
+
+            Confirm the file you downloaded matches:
+
+            ```
+            sha256sum ${{ steps.apk.outputs.name }}
+            ```
+
+            Or build it yourself from this exact tag and compare — see
+            [Verifying and building it yourself](https://github.com/${{ github.repository }}#verifying-and-building-it-yourself).
+
+            Trouble installing? See the
+            [install guide](https://github.com/${{ github.repository }}#installing-the-apk),
+            including the extra steps Xiaomi/MIUI, Huawei and Samsung phones need.
+
+            ---
 
       # The in-app updater's primary source is the GitHub Releases API, which is always
       # accurate. update_manifest.json is only a fallback for regions where that API itself
@@ -131,7 +212,8 @@ jobs:
             "apk_size": ${SIZE},
             "sha256": "${SHA256}",
             "sha256_url": "https://github.com/${REPO}/releases/download/${TAG}/${NAME}.sha256",
-            "release_url": "https://github.com/${REPO}/releases/tag/${TAG}"
+            "release_url": "https://github.com/${REPO}/releases/tag/${TAG}",
+            "virustotal_url": "https://www.virustotal.com/gui/file/${SHA256}"
           }
           JSON
           git config user.name "github-actions[bot]"

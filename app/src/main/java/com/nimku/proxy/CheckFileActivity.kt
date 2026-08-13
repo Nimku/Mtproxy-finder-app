@@ -38,8 +38,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
+import com.nimku.proxy.domain.parser.ProxyParser
 import com.nimku.proxy.ui.theme.MtproxyFinderTheme
 import com.nimku.proxy.ui.theme.mtSafeScreen
+import java.io.File
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -59,20 +61,15 @@ class CheckFileActivity : AppCompatActivity() {
                 title = getString(R.string.preparing),
                 message = getString(R.string.file_initial_message),
             )
-        fileUri =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                intent.getParcelableExtra(MainActivity.EXTRA_FILE_URI, Uri::class.java)
-            } else {
-                @Suppress("DEPRECATION") intent.getParcelableExtra(MainActivity.EXTRA_FILE_URI)
-            }
+        fileUri = resolveFileUri(intent)
         profileMode =
             runCatching {
                     NetworkProfileMode.valueOf(
                         intent.getStringExtra(MainActivity.EXTRA_PROFILE)
-                            ?: NetworkProfileMode.AUTO.name
+                            ?: savedProfileMode().name
                     )
                 }
-                .getOrDefault(NetworkProfileMode.AUTO)
+                .getOrDefault(savedProfileMode())
 
         setContent { MtproxyFinderTheme { FileCheckScreen() } }
         startChecking()
@@ -161,6 +158,50 @@ class CheckFileActivity : AppCompatActivity() {
             }
         }
     }
+
+    /**
+     * The file can arrive three ways: picked inside the app (EXTRA_FILE_URI), tapped in another
+     * app such as Telegram or a file manager (ACTION_VIEW), or shared to us (ACTION_SEND). The
+     * last two matter most where GitHub is unreachable and the channel's bot hands out a proxy
+     * list file instead — the user taps it straight from the chat and lands here.
+     */
+    private fun resolveFileUri(intent: Intent): Uri? {
+        intent.uriExtra(MainActivity.EXTRA_FILE_URI)?.let { return it }
+        if (intent.action == Intent.ACTION_SEND) {
+            intent.uriExtra(Intent.EXTRA_STREAM)?.let { return it }
+            // Shared as plain text rather than as a file — someone forwarding a block of proxy
+            // links out of a chat. Stash it so the normal file-reading path can handle it.
+            intent.getStringExtra(Intent.EXTRA_TEXT)?.takeIf { it.isNotBlank() }?.let { text ->
+                return cacheSharedText(text)
+            }
+        }
+        return intent.data
+    }
+
+    /** Never throws: a foreign intent can put anything at all under these keys. */
+    private fun Intent.uriExtra(key: String): Uri? = runCatching {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            getParcelableExtra(key, Uri::class.java)
+        } else {
+            @Suppress("DEPRECATION") getParcelableExtra(key) as? Uri
+        }
+    }.getOrNull()
+
+    private fun cacheSharedText(text: String): Uri? = runCatching {
+        val file = File(cacheDir, "shared_proxy_list.txt")
+        file.writeText(text.take(ProxyParser.MAX_INPUT_CHARS))
+        Uri.fromFile(file)
+    }.getOrNull()
+
+    private fun savedProfileMode(): NetworkProfileMode =
+        when (
+            getSharedPreferences(MainActivity.PREFS, MODE_PRIVATE)
+                .getInt(MainActivity.KEY_PROFILE, 0)
+        ) {
+            1 -> NetworkProfileMode.WIFI
+            2 -> NetworkProfileMode.MOBILE
+            else -> NetworkProfileMode.AUTO
+        }
 
     private fun startChecking() {
         val uri = fileUri

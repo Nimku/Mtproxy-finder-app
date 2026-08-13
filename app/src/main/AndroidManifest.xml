@@ -47,11 +47,6 @@
         </activity>
 
         <activity
-            android:name=".ui.SubscriptionGateActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-
-        <activity
             android:name=".ProxyListActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
@@ -65,9 +60,34 @@
             android:name=".MergeProxiesActivity"
             android:exported="false" />
 
+        <!--
+            Exported so a proxy list file can be opened straight from Telegram or a file manager
+            ("Open with → Nimku Proxy") without going through the in-app picker first. That path
+            is what keeps the app usable where GitHub is blocked but Telegram still gets through.
+        -->
         <activity
             android:name=".CheckFileActivity"
-            android:exported="false" />
+            android:exported="true"
+            android:label="@string/file_import_launcher_label">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" android:mimeType="text/plain" />
+                <data android:scheme="content" android:mimeType="text/comma-separated-values" />
+                <data android:scheme="content" android:mimeType="application/json" />
+                <data android:scheme="content" android:mimeType="application/octet-stream" />
+                <data android:scheme="file" android:mimeType="text/plain" />
+                <data android:scheme="file" android:mimeType="application/json" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="application/json" />
+                <data android:mimeType="application/octet-stream" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".ui.SettingsActivity"

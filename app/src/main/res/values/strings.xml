@@ -65,20 +65,6 @@
     <string name="later">Later</string>
     <string name="channel">Channel</string>
 
-    <string name="subscription_title">Subscription required</string>
-    <string name="subscription_body">Nimku Proxy needs an active subscription. Open our Telegram bot to subscribe (price shown there), then link the same Telegram account below.</string>
-    <string name="subscription_id_label">Your Telegram user ID</string>
-    <string name="subscription_id_hint">Numbers only — the same account you\'ll pay from in the bot. You can find it via @userinfobot.</string>
-    <string name="subscription_id_invalid">Enter a valid numeric Telegram ID</string>
-    <string name="subscription_id_save">Save</string>
-    <string name="subscription_linked_as">Linked Telegram ID: %1$s</string>
-    <string name="subscription_status_active">Subscription active</string>
-    <string name="subscription_status_grace">Couldn\'t verify right now — using last known status</string>
-    <string name="subscription_status_inactive">No active subscription found</string>
-    <string name="subscription_change_id">Change linked ID</string>
-    <string name="subscription_open_bot">Open subscription bot</string>
-    <string name="subscription_check_now">I\'ve paid — check now</string>
-    <string name="subscription_checking">Checking…</string>
 
     <string name="settings_title">Settings</string>
     <string name="settings_hint">Proxy sources run during mega-scan. Channel promo has no ads or trackers.</string>
@@ -231,6 +217,7 @@
     <string name="merge_error">Could not build the list</string>
     <string name="merge_initial_message">Collecting sources…</string>
 
+    <string name="file_import_launcher_label">Check proxy list file</string>
     <string name="file_check_title">Check file</string>
     <string name="file_working_count">%1$d working</string>
     <string name="file_open_results">Open results (%1$d)</string>

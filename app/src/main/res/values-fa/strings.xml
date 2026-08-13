@@ -65,20 +65,6 @@
     <string name="later">بعداً</string>
     <string name="channel">کانال</string>
 
-    <string name="subscription_title">اشتراک لازم است</string>
-    <string name="subscription_body">Nimku Proxy به یک اشتراک فعال نیاز دارد. برای خرید اشتراک، ربات تلگرام ما را باز کنید (قیمت در همان‌جا نمایش داده می‌شود)، سپس همان حساب تلگرام را در پایین متصل کنید.</string>
-    <string name="subscription_id_label">شناسه کاربری تلگرام شما</string>
-    <string name="subscription_id_hint">فقط عدد — همان حسابی که در ربات از آن پرداخت می‌کنید. می‌توانید آن را از طریق @userinfobot پیدا کنید.</string>
-    <string name="subscription_id_invalid">یک شناسه عددی معتبر تلگرام وارد کنید</string>
-    <string name="subscription_id_save">ذخیره</string>
-    <string name="subscription_linked_as">شناسه تلگرام متصل‌شده: %1$s</string>
-    <string name="subscription_status_active">اشتراک فعال است</string>
-    <string name="subscription_status_grace">در حال حاضر امکان تأیید نبود — از آخرین وضعیت شناخته‌شده استفاده می‌شود</string>
-    <string name="subscription_status_inactive">اشتراک فعالی یافت نشد</string>
-    <string name="subscription_change_id">تغییر شناسه متصل‌شده</string>
-    <string name="subscription_open_bot">باز کردن ربات اشتراک</string>
-    <string name="subscription_check_now">پرداخت کردم — اکنون بررسی کن</string>
-    <string name="subscription_checking">در حال بررسی…</string>
 
     <string name="settings_title">تنظیمات</string>
     <string name="settings_hint">منابع پروکسی در طول مگا-اسکن اجرا می‌شوند. تبلیغ کانال بدون آگهی یا ردیاب است.</string>
@@ -231,6 +217,7 @@
     <string name="merge_error">ساخت فهرست ممکن نشد</string>
     <string name="merge_initial_message">در حال گردآوری منابع…</string>
 
+    <string name="file_import_launcher_label">بررسی فایل فهرست پروکسی</string>
     <string name="file_check_title">بررسی فایل</string>
     <string name="file_working_count">%1$d working</string>
     <string name="file_open_results">Open results (%1$d)</string>

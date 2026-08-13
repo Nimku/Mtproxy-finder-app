@@ -65,20 +65,6 @@
     <string name="later">Позже</string>
     <string name="channel">Канал</string>
 
-    <string name="subscription_title">Нужна подписка</string>
-    <string name="subscription_body">Для Nimku Proxy нужна активная подписка. Откройте наш Telegram-бот, чтобы оформить подписку (цена указана там), затем привяжите тот же аккаунт Telegram ниже.</string>
-    <string name="subscription_id_label">Ваш Telegram ID</string>
-    <string name="subscription_id_hint">Только цифры — тот же аккаунт, с которого будете платить в боте. Узнать его можно через @userinfobot.</string>
-    <string name="subscription_id_invalid">Введите корректный числовой Telegram ID</string>
-    <string name="subscription_id_save">Сохранить</string>
-    <string name="subscription_linked_as">Привязанный Telegram ID: %1$s</string>
-    <string name="subscription_status_active">Подписка активна</string>
-    <string name="subscription_status_grace">Не удалось проверить сейчас — используется последний известный статус</string>
-    <string name="subscription_status_inactive">Активная подписка не найдена</string>
-    <string name="subscription_change_id">Изменить привязанный ID</string>
-    <string name="subscription_open_bot">Открыть бота подписки</string>
-    <string name="subscription_check_now">Я оплатил — проверить сейчас</string>
-    <string name="subscription_checking">Проверка…</string>
 
     <string name="settings_title">Настройки</string>
     <string name="settings_hint">Источники прокси подключаются при мега-скане. Канал — без рекламы и трекеров.</string>
@@ -231,6 +217,7 @@
     <string name="merge_error">Не удалось собрать список</string>
     <string name="merge_initial_message">Собираю источники…</string>
 
+    <string name="file_import_launcher_label">Проверить файл со списком прокси</string>
     <string name="file_check_title">Проверка файла</string>
     <string name="file_working_count">%1$d рабочих</string>
     <string name="file_open_results">Открыть результаты (%1$d)</string>

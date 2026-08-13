@@ -65,20 +65,6 @@
     <string name="later">لاحقًا</string>
     <string name="channel">القناة</string>
 
-    <string name="subscription_title">الاشتراك مطلوب</string>
-    <string name="subscription_body">يتطلب Nimku Proxy اشتراكًا فعالًا. افتح بوت تيليجرام الخاص بنا للاشتراك (السعر موضح هناك)، ثم اربط نفس حساب تيليجرام أدناه.</string>
-    <string name="subscription_id_label">معرّف تيليجرام الخاص بك</string>
-    <string name="subscription_id_hint">أرقام فقط — نفس الحساب الذي ستدفع منه في البوت. يمكنك العثور عليه عبر @userinfobot.</string>
-    <string name="subscription_id_invalid">أدخل معرّف تيليجرام رقميًا صحيحًا</string>
-    <string name="subscription_id_save">حفظ</string>
-    <string name="subscription_linked_as">المعرّف المرتبط: %1$s</string>
-    <string name="subscription_status_active">الاشتراك فعّال</string>
-    <string name="subscription_status_grace">تعذر التحقق الآن — يتم استخدام آخر حالة معروفة</string>
-    <string name="subscription_status_inactive">لم يتم العثور على اشتراك فعّال</string>
-    <string name="subscription_change_id">تغيير المعرّف المرتبط</string>
-    <string name="subscription_open_bot">فتح بوت الاشتراك</string>
-    <string name="subscription_check_now">لقد دفعت — تحقق الآن</string>
-    <string name="subscription_checking">جارٍ التحقق…</string>
 
     <string name="settings_title">الإعدادات</string>
     <string name="settings_hint">تعمل مصادر البروكسي أثناء الفحص الشامل. الترويج للقناة خالٍ من الإعلانات والمتتبعات.</string>
@@ -231,6 +217,7 @@
     <string name="merge_error">تعذر إنشاء القائمة</string>
     <string name="merge_initial_message">جارٍ جمع المصادر…</string>
 
+    <string name="file_import_launcher_label">فحص ملف قائمة البروكسي</string>
     <string name="file_check_title">فحص ملف</string>
     <string name="file_working_count">%1$d working</string>
     <string name="file_open_results">Open results (%1$d)</string>

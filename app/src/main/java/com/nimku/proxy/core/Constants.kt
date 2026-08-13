@@ -3,7 +3,11 @@ package com.nimku.proxy.core
 object Constants {
     const val TELEGRAM_CHANNEL_USERNAME = "SetProxy"
 
-    /** Your subscription bot, e.g. "NimkuBot" (no leading @). Used for the paywall deep link. */
+    /**
+     * The channel's companion bot (no leading @). The app is free and never asks it for a
+     * licence — the bot's job is to hand out freshly scraped proxy list files for regions where
+     * GitHub itself is unreachable (see ImportProxyFile in README.md).
+     */
     const val TELEGRAM_BOT_USERNAME = "Nimkuproxybot"
     const val TELEGRAM_CHANNEL_URL = "https://t.me/$TELEGRAM_CHANNEL_USERNAME"
     const val TELEGRAM_CHANNEL_DEEP_LINK = "tg://resolve?domain=$TELEGRAM_CHANNEL_USERNAME"
@@ -21,48 +25,6 @@ object Constants {
      */
     const val PRIORITY_SOURCE_ID = "dubblebyte"
     const val PRIORITY_SOURCE_COUNT = 20
-
-    // --- Subscription / license gate (see license/LicenseManager.kt) ---
-
-    /** Repo + path the license status file is mirrored to by bot/bot.py. */
-    const val LICENSE_REPO_OWNER = "nimku"
-    const val LICENSE_REPO_NAME = "mtproxy-finder-app"
-    const val LICENSE_REPO_REF = "main"
-    const val LICENSE_STATUS_PATH = "license/status.json"
-
-    /**
-     * Reserved subscriptions{} key the bot writes when the admin turns on "free mode" from the
-     * in-Telegram admin panel. If this key is present and unexpired, every user is treated as
-     * subscribed regardless of their own hash — no app update needed to go free (or back to paid).
-     */
-    const val LICENSE_FREE_FOR_ALL_KEY = "__free_for_all__"
-
-    /**
-     * Salt mixed into the locally-entered Telegram user ID before hashing (see
-     * LicenseManager.hashTelegramId). MUST exactly match HASH_SALT in the bot's .env, or every
-     * check will report "not subscribed" even for a paying user.
-     *
-     * This is not a secret and cannot be one — it ships inside the APK, so anyone willing to
-     * decompile can recover it. All it does is stop a casual reader of the public
-     * license/status.json from checking "is <telegram id> a subscriber?" by hashing guesses
-     * against a well-known default. It does not gate write access; that's the bot's private
-     * GitHub token, which never ships here.
-     *
-     * Changing this invalidates every existing entry in license/status.json (they were hashed
-     * with the old salt), so it must be paired with a migration that re-adds current subscribers
-     * under the new salt — never change it on its own.
-     */
-    const val LICENSE_HASH_SALT = "nimku-97vhjrUAkaLVu5Pi7aZr8iNv4LRMgNDs"
-
-    /** Subscription length granted per successful payment; must match bot/bot.py. */
-    const val LICENSE_PERIOD_DAYS = 30
-
-    /**
-     * How long the app keeps treating a subscription as active after the last successful
-     * "you're active" check, if it can't reach GitHub/CDN mirrors at all (e.g. mid-flight,
-     * temporary block). Does NOT apply once a check succeeds and reports expired/missing.
-     */
-    const val LICENSE_OFFLINE_GRACE_DAYS = 3
 
     val GITHUB_CDN_TEMPLATES = listOf(
         "https://cdn.jsdelivr.net/gh/{owner}/{repo}@{ref}/{path}",

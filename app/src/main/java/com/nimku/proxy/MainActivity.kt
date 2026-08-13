@@ -127,14 +127,6 @@ class MainActivity : AppCompatActivity() {
         AppLocaleManager.apply(AppLocaleManager.currentTag())
         super.onCreate(savedInstanceState)
 
-        if (!com.nimku.proxy.license.LicenseManager.cachedResult(this).usable) {
-            startActivity(
-                Intent(this, com.nimku.proxy.ui.SubscriptionGateActivity::class.java)
-            )
-            finish()
-            return
-        }
-
         statusText = getString(R.string.home_ready)
         updateChecker = UpdateChecker(this, client)
         apkDownloader = ApkDownloader(this)
@@ -150,17 +142,6 @@ class MainActivity : AppCompatActivity() {
         FavoriteMonitorWorker.schedule(this)
         UpdateCheckWorker.schedule(this)
         lifecycleScope.launch { ProxyCache.migrateCleanup(this@MainActivity) }
-        // Authoritative re-check in the background; if it turns out the subscription actually
-        // expired since the last check, bounce to the paywall instead of leaving stale access.
-        lifecycleScope.launch {
-            val fresh = com.nimku.proxy.license.LicenseManager.refresh(this@MainActivity)
-            if (!fresh.usable) {
-                startActivity(
-                    Intent(this@MainActivity, com.nimku.proxy.ui.SubscriptionGateActivity::class.java)
-                )
-                finish()
-            }
-        }
     }
 
     override fun onNewIntent(intent: Intent) {
