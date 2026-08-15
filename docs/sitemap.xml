@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <url>
+    <loc>https://nimku.github.io/Mtproxy-finder-app/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nimku.github.io/Mtproxy-finder-app/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://nimku.github.io/Mtproxy-finder-app/ru.html"/>
+    <xhtml:link rel="alternate" hreflang="fa" href="https://nimku.github.io/Mtproxy-finder-app/fa.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://nimku.github.io/Mtproxy-finder-app/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://nimku.github.io/Mtproxy-finder-app/ru.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nimku.github.io/Mtproxy-finder-app/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://nimku.github.io/Mtproxy-finder-app/ru.html"/>
+    <xhtml:link rel="alternate" hreflang="fa" href="https://nimku.github.io/Mtproxy-finder-app/fa.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://nimku.github.io/Mtproxy-finder-app/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://nimku.github.io/Mtproxy-finder-app/fa.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nimku.github.io/Mtproxy-finder-app/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://nimku.github.io/Mtproxy-finder-app/ru.html"/>
+    <xhtml:link rel="alternate" hreflang="fa" href="https://nimku.github.io/Mtproxy-finder-app/fa.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://nimku.github.io/Mtproxy-finder-app/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+</urlset>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Nimku Proxy — Free Telegram MTProto Proxy Finder for Android</title>
+<meta name="description" content="Free open-source Android app that finds working Telegram MTProto proxies. It tests every proxy with a real MTProto handshake and shows only the ones working right now. No subscription, no ads, no tracking.">
+<meta name="keywords" content="telegram proxy, mtproto proxy, telegram proxy finder, free telegram proxy, telegram proxy android app, mtproto proxy checker, working telegram proxies, telegram proxy list">
+<link rel="canonical" href="https://nimku.github.io/Mtproxy-finder-app/">
+
+<link rel="alternate" hreflang="en" href="https://nimku.github.io/Mtproxy-finder-app/">
+<link rel="alternate" hreflang="ru" href="https://nimku.github.io/Mtproxy-finder-app/ru.html">
+<link rel="alternate" hreflang="fa" href="https://nimku.github.io/Mtproxy-finder-app/fa.html">
+<link rel="alternate" hreflang="x-default" href="https://nimku.github.io/Mtproxy-finder-app/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nimku Proxy — Free Telegram MTProto Proxy Finder for Android">
+<meta property="og:description" content="Finds working Telegram MTProto proxies and verifies each one with a real handshake. Free, open source, no ads, no tracking.">
+<meta property="og:url" content="https://nimku.github.io/Mtproxy-finder-app/">
+<meta property="og:image" content="https://nimku.github.io/Mtproxy-finder-app/icon.png">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ru_RU">
+<meta property="og:locale:alternate" content="fa_IR">
+<meta name="twitter:card" content="summary">
+
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Nimku Proxy",
+  "alternateName": "Telegram MTProto Proxy Finder",
+  "operatingSystem": "Android 7.0+",
+  "applicationCategory": "UtilitiesApplication",
+  "description": "Free open-source Android app that finds working Telegram MTProto proxies and verifies each one with a real MTProto handshake.",
+  "url": "https://nimku.github.io/Mtproxy-finder-app/",
+  "downloadUrl": "https://github.com/Nimku/Mtproxy-finder-app/releases/latest",
+  "softwareVersion": "2.0.0",
+  "license": "https://opensource.org/licenses/MIT",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is a Telegram MTProto proxy?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "MTProto is Telegram's own proxy protocol. An MTProto proxy is a server that passes your Telegram traffic along for you, which lets Telegram connect in places where it is blocked or throttled. Only Telegram uses it — it is not a VPN and does not affect your other apps."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Nimku Proxy free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, completely. There is no subscription, no payment, no account, no sign-up and no advertising."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why do most Telegram proxies from public lists not work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Public proxy lists go stale within hours. Proxies get overloaded, blocked, or switched off by their owners, so most addresses in any published list are already dead. Nimku Proxy tests every address itself, from your phone and your network, and shows only the ones responding right now."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Nimku Proxy a VPN?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. It does not route your phone's traffic. It finds proxy addresses and hands the one you choose to your Telegram app, so only Telegram uses the proxy. Your browser and other apps are unaffected."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Nimku Proxy collect any personal data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. There is no account, no login, no analytics, no trackers and no Google or Firebase services in the app. Scan results and favourites stay on your phone. The source code is public so this can be verified."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I install the APK on a Xiaomi, Huawei or Samsung phone?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Beyond the standard 'allow from this source' permission, MIUI needs Enhanced security turned off, Huawei needs Pure Mode turned off, and Samsung One UI 6.0+ needs Auto Blocker turned off. Full step-by-step instructions for each manufacturer are in the project README."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<nav class="langbar"><strong>English</strong> · <a href="ru.html" hreflang="ru">Русский</a> · <a href="fa.html" hreflang="fa">فارسی</a></nav>
+
+<header>
+  <img src="icon.png" alt="Nimku Proxy app icon" width="96" height="96">
+  <h1>Free Telegram MTProto proxy finder for Android</h1>
+  <p class="tagline">Nimku Proxy collects Telegram proxies from dozens of public lists, tests every single one, and shows you only the proxies that are working <strong>right now</strong> — fastest first.</p>
+  <a class="cta" href="https://github.com/Nimku/Mtproxy-finder-app/releases/latest">Download the APK</a>
+  <p class="cta-note">Android 7.0 or newer · free · open source · no ads</p>
+  <p class="badges">No subscription · No account · No tracking</p>
+</header>
+
+<main>
+
+<h2>Why you need it</h2>
+<p>In many countries Telegram is blocked, throttled, or simply refuses to connect. A <strong>Telegram MTProto proxy</strong> fixes that — it is a server somewhere else in the world that passes your Telegram traffic along for you.</p>
+<p>People publish these proxies for free in lists and channels. The problem is that <strong>those lists die fast</strong>. A proxy that worked this morning is gone by evening: overloaded, blocked, or switched off. Most addresses in any public list are already dead when you find them, and testing them one by one by hand is slow and frustrating.</p>
+<p><strong>Nimku Proxy does that work for you.</strong></p>
+
+<h2>How it works</h2>
+<ol class="steps">
+  <li><strong>Collects</strong> proxy addresses from dozens of public lists and Telegram channels.</li>
+  <li><strong>Tests each one for real</strong> — a genuine MTProto handshake, run from your phone on your network. A list's own "verified" label is never trusted.</li>
+  <li><strong>Shows only working proxies</strong>, fastest at the top, appearing live while the scan is still running.</li>
+  <li><strong>You tap one</strong> and Telegram opens and asks you to switch it on.</li>
+</ol>
+<p class="muted">That second step is the one that matters. A proxy is only "working" from <em>your</em> network — one that is fine in one country may be blocked in another. Because the test runs on your device, the results are true for you specifically.</p>
+
+<h2>What it is not</h2>
+<div class="card">
+  <p><strong>It is not a VPN.</strong> It does not route your phone's traffic anywhere. It finds proxy addresses and hands the one you pick to Telegram. Only Telegram uses it — your browser and other apps are unaffected.</p>
+  <p><strong>It does not touch your Telegram account.</strong> No login, no phone number, no access to your messages.</p>
+  <p><strong>It collects nothing about you.</strong> No account, no analytics, no trackers, no ads, no Google or Firebase services.</p>
+</div>
+
+<h2>Features</h2>
+<ul class="features">
+  <li>Four scan depths — quick, balanced, full (up to 15,000 addresses) and custom</li>
+  <li>Auto / Wi-Fi / LTE network profiles</li>
+  <li>Live streaming results while the scan runs</li>
+  <li>Favourites with background monitoring and notifications when one stops working</li>
+  <li>Scan history, reliability ranking and per-source statistics</li>
+  <li>Import a proxy list from a file, or straight from Telegram</li>
+  <li>QR code export and import</li>
+  <li>Add your own proxy sources</li>
+  <li>Themes, colours, text size, and a fully localised interface</li>
+  <li>Verified self-updates — version, package, signing certificate and SHA-256 all checked</li>
+</ul>
+
+<h2>Works even where GitHub is blocked</h2>
+<p>The app normally fetches its proxy lists from GitHub. In some regions GitHub itself is unreachable — and that varies by city and mobile operator. For those cases there is a second path that needs no GitHub access at all: our Telegram bot sends you the current proxy list as a plain file, you tap it, choose <strong>Open with → Nimku Proxy</strong>, and the app checks that list exactly like a normal scan.</p>
+
+<h2>Is it safe to install?</h2>
+<p>You should not install an unknown APK on trust, and you do not have to. Every release can be verified in several ways:</p>
+<ul class="features">
+  <li>Scan the APK yourself on VirusTotal or with any antivirus you trust</li>
+  <li>Compare the published <code>SHA-256</code> checksum with your download</li>
+  <li>Check the signing certificate — every release is signed with the same key</li>
+  <li>Build it yourself from source and compare the compiled code</li>
+</ul>
+<p>Full instructions are in the <a href="https://github.com/Nimku/Mtproxy-finder-app#is-it-safe-to-install">project README</a>. The complete source code is public.</p>
+
+<h2>Installing on Xiaomi, Huawei and Samsung</h2>
+<p>Android blocks installs from outside Google Play until you allow them, and some manufacturers add extra steps that catch people out — MIUI's <em>Enhanced security</em>, Huawei's <em>Pure Mode</em>, and Samsung's <em>Auto Blocker</em> all silently block sideloading. There are step-by-step instructions for each manufacturer in the <a href="https://github.com/Nimku/Mtproxy-finder-app#installing-the-apk">install guide</a>.</p>
+
+<h2>Frequently asked questions</h2>
+
+<details>
+  <summary>What is a Telegram MTProto proxy?</summary>
+  <p>MTProto is Telegram's own proxy protocol. An MTProto proxy is a server that passes your Telegram traffic along for you, letting Telegram connect where it is blocked or throttled. Only Telegram uses it — it is not a VPN.</p>
+</details>
+
+<details>
+  <summary>Is it really free?</summary>
+  <p>Yes, completely. No subscription, no payment, no account, no sign-up, no advertising.</p>
+</details>
+
+<details>
+  <summary>Why don't proxies from public lists work?</summary>
+  <p>Public lists go stale within hours — proxies get overloaded, blocked, or switched off. Most addresses in a published list are already dead. Nimku Proxy tests every address itself, right now, from your network.</p>
+</details>
+
+<details>
+  <summary>Does it collect my data?</summary>
+  <p>No. No account, no login, no analytics, no trackers, no Google or Firebase services. Your scan results and favourites stay on your phone, and the source code is public so you can check.</p>
+</details>
+
+<details>
+  <summary>Are public proxies safe to use?</summary>
+  <p>Be aware that public proxies are run by strangers. Whoever operates one can see that you are connecting and how much traffic you send. Your Telegram chats stay encrypted between you and Telegram, and secret chats stay end-to-end encrypted, but a proxy is not an anonymity tool. Use it to reach Telegram when it is blocked, not to hide who you are.</p>
+</details>
+
+</main>
+
+<footer>
+  <p><a href="https://github.com/Nimku/Mtproxy-finder-app">Source code on GitHub</a> · <a href="https://github.com/Nimku/Mtproxy-finder-app/releases/latest">Latest release</a> · MIT licence</p>
+</footer>
+
+</body>
+</html>

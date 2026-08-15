@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nimku.github.io/Mtproxy-finder-app/sitemap.xml

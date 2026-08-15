@@ -7,6 +7,8 @@
 
 [English](README.md) · [Русский](README.ru.md) · **فارسی**
 
+🌐 **وب‌سایت: [nimku.github.io/Mtproxy-finder-app/fa.html](https://nimku.github.io/Mtproxy-finder-app/fa.html)**
+
 ---
 
 ## این برنامه به چه دردی می‌خورد؟
