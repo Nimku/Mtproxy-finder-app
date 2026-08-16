@@ -73,6 +73,10 @@ class Config:
 
     output_dir: str
     publish_channel: str
+    # Whether the admin report names each source. Off by default: that message
+    # is one forward away from publishing the whole source list. Per-source
+    # counts stay in the log either way.
+    report_sources: bool
 
     @property
     def has_telethon(self) -> bool:
@@ -106,4 +110,5 @@ def load() -> Config:
         max_published=_int("MAX_PUBLISHED", 2000),
         output_dir=os.getenv("OUTPUT_DIR", "data").strip() or "data",
         publish_channel=os.getenv("PUBLISH_CHANNEL", "").strip(),
+        report_sources=_bool("REPORT_SOURCES", False),
     )

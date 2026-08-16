@@ -353,9 +353,18 @@ async def run_once(client, cfg) -> tuple[str, RunStats]:
     return path, stats
 
 
-def summary(stats: RunStats, cfg) -> str:
-    """Human-readable run report — sent to the admin, and useful for working out
-    which sources are worth keeping."""
+def summary(stats: RunStats, cfg, detailed: bool | None = None) -> str:
+    """Run report.
+
+    Source names are left out by default. This goes to Telegram, and a message
+    naming every feed and channel is one forward or screenshot away from handing
+    the whole source list to anyone who wants to copy it. The per-source counts
+    are still written to the log on every run, so `journalctl -u nimku-proxy-bot`
+    has everything needed to decide which sources to prune — it just doesn't
+    travel. Set REPORT_SOURCES=true to put them back in the message.
+    """
+    if detailed is None:
+        detailed = cfg.report_sources
     ranked = sorted(stats.per_source.items(), key=lambda kv: -kv[1])
     top = "\n".join(f"  {n:>4}  {name}" for name, n in ranked[:12] if n)
     dead = [name for name, n in stats.per_source.items() if not n]
@@ -371,8 +380,12 @@ def summary(stats: RunStats, cfg) -> str:
         lines.append(f"Unreachable from here (kept): {stats.unreachable}")
         lines.append(f"Not real proxies (dropped): {stats.rejected}")
     lines.append(f"Published: {stats.published}")
-    if top:
-        lines.append("\nTop sources:\n" + top)
-    if dead:
-        lines.append(f"\nProduced nothing ({len(dead)}): " + ", ".join(dead[:20]))
+    if detailed:
+        if top:
+            lines.append("\nTop sources:\n" + top)
+        if dead:
+            lines.append(f"\nProduced nothing ({len(dead)}): " + ", ".join(dead[:20]))
+    elif dead:
+        # Worth knowing that sources went quiet without naming which.
+        lines.append(f"Sources producing nothing: {len(dead)}")
     return "\n".join(lines)
