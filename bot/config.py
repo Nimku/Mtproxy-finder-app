@@ -32,6 +32,18 @@ def _bool(name: str, default: bool) -> bool:
     return raw in ("1", "true", "yes", "on")
 
 
+def _verify_mode() -> str:
+    """Also understands the older VERIFY=true/false switch, so an existing .env
+    keeps working: VERIFY=false means the same as VERIFY_MODE=off."""
+    raw = os.getenv("VERIFY_MODE", "").strip().lower()
+    if raw in ("protocol", "strict", "off"):
+        return raw
+    legacy = os.getenv("VERIFY", "").strip().lower()
+    if legacy in ("0", "false", "no", "off"):
+        return "off"
+    return "protocol"
+
+
 @dataclass(frozen=True)
 class Config:
     bot_token: str
@@ -48,7 +60,12 @@ class Config:
     proxies_per_channel: int
     channel_message_limit: int
 
-    verify: bool
+    # "protocol" (default) — drop only proxies that answered and then failed the
+    #                        MTProto protocol; keep ones we simply couldn't reach,
+    #                        since that may be our route rather than the proxy.
+    # "strict"             — publish only what passed from this server.
+    # "off"                — publish everything scraped, no network test.
+    verify_mode: str
     verify_workers: int
     connect_timeout: float
     response_timeout: float
@@ -82,7 +99,7 @@ def load() -> Config:
         refresh_minutes=_int("REFRESH_MINUTES", 60),
         proxies_per_channel=_int("PROXIES_PER_CHANNEL", 30),
         channel_message_limit=_int("CHANNEL_MESSAGE_LIMIT", 120),
-        verify=_bool("VERIFY", True),
+        verify_mode=_verify_mode(),
         verify_workers=_int("VERIFY_WORKERS", 60),
         connect_timeout=float(_int("CONNECT_TIMEOUT_MS", 2500)) / 1000.0,
         response_timeout=float(_int("RESPONSE_TIMEOUT_MS", 3500)) / 1000.0,

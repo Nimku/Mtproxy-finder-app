@@ -73,7 +73,9 @@ class RunStats:
     failed_sources: dict[str, str] = field(default_factory=dict)
     scraped: int = 0
     unique: int = 0
-    verified: int = 0
+    confirmed: int = 0      # passed the handshake from this server
+    unreachable: int = 0    # never answered here — kept anyway, may work elsewhere
+    rejected: int = 0       # answered but isn't a proxy — dropped
     published: int = 0
     verify_seconds: float = 0.0
 
@@ -216,13 +218,25 @@ async def scrape_channels(client, cfg, stats: RunStats) -> list[Proxy]:
 #  Verification
 # ─────────────────────────────────────────────────────────────
 
-async def verify_all(proxies: list[Proxy], cfg) -> list[tuple[Proxy, int]]:
-    """Full MTProto handshake against every proxy, in parallel.
+async def verify_all(proxies: list[Proxy], cfg) -> tuple[list[tuple[Proxy, int]], dict[str, int]]:
+    """Run the full MTProto handshake against every proxy, in parallel.
 
-    Checks from *this server*, which is not where the user is — a proxy that
-    answers here can still be blocked from inside Russia or Iran. So this is a
-    filter for definitely-dead entries, not a promise. The app re-checks every
-    proxy on the user's own network, which is the verdict that counts.
+    The important nuance is what a failure means. This check runs from *our
+    server*, which is not where the user is, so the two failure kinds have to be
+    treated differently:
+
+      never reached  — timeout, refused, DNS failure. Might be this server's
+                       route rather than a dead proxy: something blocked from
+                       Oman can work perfectly from Moscow. Not ours to discard.
+      reached, rejected — the server answered and then failed the protocol: it
+                       isn't an MTProto proxy, or it doesn't accept the secret
+                       it was published with. That is true from everywhere, so
+                       dropping it costs the user nothing.
+
+    VERIFY_MODE picks the policy:
+      strict   — publish only proxies that passed here
+      protocol — drop only the "reached, rejected" ones  (default)
+      off      — publish everything, handled by the caller
     """
     started = time.monotonic()
     loop = asyncio.get_running_loop()
@@ -230,7 +244,7 @@ async def verify_all(proxies: list[Proxy], cfg) -> list[tuple[Proxy, int]]:
 
     with ThreadPoolExecutor(max_workers=cfg.verify_workers) as pool:
 
-        async def check(p: Proxy) -> tuple[Proxy, int] | None:
+        async def check(p: Proxy) -> tuple[Proxy, mtproto.CheckResult]:
             async with semaphore:
                 result = await loop.run_in_executor(
                     pool,
@@ -240,14 +254,34 @@ async def verify_all(proxies: list[Proxy], cfg) -> list[tuple[Proxy, int]]:
                         response_timeout=cfg.response_timeout,
                     ),
                 )
-            return (p, result.rtt_ms) if result.ok else None
+            return p, result
 
         results = await asyncio.gather(*[check(p) for p in proxies])
 
-    alive = [r for r in results if r is not None]
-    alive.sort(key=lambda pair: pair[1])
-    log.info("verified %d/%d alive in %.1fs", len(alive), len(proxies), time.monotonic() - started)
-    return alive
+    confirmed = [(p, r.rtt_ms) for p, r in results if r.ok]
+    unreachable = [(p, 0) for p, r in results if not r.ok and not r.reached]
+    rejected = [(p, r) for p, r in results if not r.ok and r.reached]
+
+    confirmed.sort(key=lambda pair: pair[1])
+    counts = {
+        "confirmed": len(confirmed),
+        "unreachable": len(unreachable),
+        "rejected": len(rejected),
+    }
+
+    if cfg.verify_mode == "strict":
+        kept = confirmed
+    else:
+        # Confirmed ones first, fastest first, so the app tries the proxies most
+        # likely to work before the unproven ones.
+        kept = confirmed + unreachable
+
+    log.info(
+        "checked %d in %.1fs — %d confirmed, %d unreachable from here, %d rejected as not-a-proxy",
+        len(proxies), time.monotonic() - started,
+        counts["confirmed"], counts["unreachable"], counts["rejected"],
+    )
+    return kept, counts
 
 
 # ─────────────────────────────────────────────────────────────
@@ -259,13 +293,20 @@ def write_file(entries: list[tuple[Proxy, int]], stats: RunStats, cfg) -> str:
     path = os.path.join(cfg.output_dir, "proxies.txt")
     generated = stats.started_at.strftime("%Y-%m-%d %H:%M UTC")
 
+    if cfg.verify_mode == "off":
+        note = "# Collected but not tested — the app tests every one on your network."
+    elif cfg.verify_mode == "strict":
+        note = "# Every proxy here passed a real MTProto handshake from our server."
+    else:
+        note = (f"# {stats.confirmed} confirmed working from our server, "
+                f"{stats.unreachable} unconfirmed but kept (they may work on your\n"
+                f"# network even though ours couldn't reach them). "
+                f"{stats.rejected} dropped as not real proxies.")
     lines = [
         "# Nimku Proxy — MTProto proxy list",
         f"# Generated: {generated}",
         f"# Proxies: {len(entries)}",
-        (f"# Every proxy here passed a real MTProto handshake from our server."
-         if cfg.verify else
-         "# Unverified: collected but not tested — the app will test them."),
+        note,
         "#",
         "# Open this file with the Nimku Proxy app; it re-checks every proxy",
         "# from your own network and shows the ones that work for you.",
@@ -296,11 +337,13 @@ async def run_once(client, cfg) -> tuple[str, RunStats]:
     stats.unique = len(pool)
     log.info("scraped %d, %d unique", stats.scraped, stats.unique)
 
-    if cfg.verify:
+    if cfg.verify_mode != "off":
         verify_started = time.monotonic()
-        entries = await verify_all(pool, cfg)
+        entries, counts = await verify_all(pool, cfg)
         stats.verify_seconds = time.monotonic() - verify_started
-        stats.verified = len(entries)
+        stats.confirmed = counts["confirmed"]
+        stats.unreachable = counts["unreachable"]
+        stats.rejected = counts["rejected"]
     else:
         entries = [(p, 0) for p in pool]
 
@@ -320,11 +363,13 @@ def summary(stats: RunStats, cfg) -> str:
         f"Scraped {stats.scraped} proxies from {stats.working_sources}/{src.TOTAL_SOURCES} sources",
         f"Unique: {stats.unique}",
     ]
-    if cfg.verify:
+    if cfg.verify_mode != "off":
         lines.append(
-            f"Passed MTProto handshake: {stats.verified} "
-            f"({stats.verified * 100 // max(stats.unique, 1)}%) in {stats.verify_seconds:.0f}s"
+            f"Confirmed working here: {stats.confirmed} "
+            f"({stats.confirmed * 100 // max(stats.unique, 1)}%) in {stats.verify_seconds:.0f}s"
         )
+        lines.append(f"Unreachable from here (kept): {stats.unreachable}")
+        lines.append(f"Not real proxies (dropped): {stats.rejected}")
     lines.append(f"Published: {stats.published}")
     if top:
         lines.append("\nTop sources:\n" + top)

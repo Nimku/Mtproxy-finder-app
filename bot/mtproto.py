@@ -66,6 +66,12 @@ class CheckResult:
     ok: bool
     rtt_ms: int
     error: str | None = None
+    # True once the TCP connection was established. This is the difference
+    # between "this server is not a Telegram proxy" (reached, then the protocol
+    # rejected it — true everywhere) and "we couldn't get to it from here"
+    # (never reached — could just be this server's route). Only the first kind
+    # is safe to discard on the user's behalf; see scraper.VERIFY_MODE.
+    reached: bool = False
 
 
 # ─────────────────────────────────────────────────────────────
@@ -456,8 +462,10 @@ def check(
     """Blocking. Run it in a thread pool — see scraper.verify_all()."""
     started = time.monotonic()
     sock = None
+    reached = False
     try:
         sock = socket.create_connection((host, port), timeout=connect_timeout)
+        reached = True
         sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         sock.settimeout(response_timeout)
 
@@ -482,10 +490,10 @@ def check(
         _parse_res_pq(dec.update(transport.read_exact(frame_len)), nonce)
 
         rtt = int((time.monotonic() - started) * 1000)
-        return CheckResult(True, max(rtt, 1))
+        return CheckResult(True, max(rtt, 1), None, True)
     except Exception as exc:
         rtt = int((time.monotonic() - started) * 1000)
-        return CheckResult(False, rtt, str(exc) or exc.__class__.__name__)
+        return CheckResult(False, rtt, str(exc) or exc.__class__.__name__, reached)
     finally:
         if sock is not None:
             try:
@@ -497,7 +505,9 @@ def check(
 def check_link(host: str, port: int, secret_str: str, **kwargs) -> CheckResult:
     secret = decode_secret(secret_str)
     if secret is None:
-        return CheckResult(False, -1, "unparseable secret")
+        # Malformed beyond use — no network involved, so this verdict holds
+        # everywhere and the entry can be dropped safely.
+        return CheckResult(False, -1, "unparseable secret", reached=True)
     return check(host, port, secret, **kwargs)
 
 

@@ -33,11 +33,12 @@ TEXT = {
             "The app will test each one and show those that work on your network."
         ),
         "file_caption_verified": (
-            "📥 <b>{count} working proxies</b> · updated {age}\n\n"
-            "Every one passed a real Telegram handshake on our server just now.\n\n"
+            "📥 <b>{count} proxies</b> · updated {age}\n\n"
+            "{confirmed} of them answered a real Telegram handshake on our server "
+            "just now. The rest we couldn't reach from here — they're included "
+            "anyway, because your network isn't ours and they may work for you.\n\n"
             "Tap the file above → <b>Open with</b> → <b>Nimku Proxy</b>.\n"
-            "The app re-tests them on your own network, because a proxy that works "
-            "for us may still be blocked where you are."
+            "The app tests every one on your own network and shows what works."
         ),
         "help": (
             "❓ <b>How to use this</b>\n\n"
@@ -87,11 +88,12 @@ TEXT = {
             "Приложение проверит каждый и покажет те, что работают в вашей сети."
         ),
         "file_caption_verified": (
-            "📥 <b>{count} рабочих прокси</b> · обновлено {age}\n\n"
-            "Каждый только что прошёл настоящее рукопожатие Телеграм на нашем сервере.\n\n"
+            "📥 <b>{count} прокси</b> · обновлено {age}\n\n"
+            "{confirmed} из них только что прошли настоящее рукопожатие Телеграм на "
+            "нашем сервере. До остальных мы не достучались — но они всё равно в "
+            "списке: ваша сеть не наша, и у вас они могут работать.\n\n"
             "Нажмите на файл выше → <b>Открыть с помощью</b> → <b>Nimku Proxy</b>.\n"
-            "Приложение перепроверит их в вашей сети — прокси, работающий у нас, "
-            "может быть заблокирован у вас."
+            "Приложение проверит каждый в вашей сети и покажет рабочие."
         ),
         "help": (
             "❓ <b>Как этим пользоваться</b>\n\n"
@@ -141,11 +143,12 @@ TEXT = {
             "برنامه هر کدام را آزمایش می‌کند و آن‌هایی را که در شبکهٔ شما کار می‌کنند نشان می‌دهد."
         ),
         "file_caption_verified": (
-            "📥 <b>{count} پروکسی سالم</b> · بروزرسانی {age}\n\n"
-            "همهٔ آن‌ها همین حالا روی سرور ما یک دست‌دادن واقعی تلگرام را با موفقیت گذرانده‌اند.\n\n"
+            "📥 <b>{count} پروکسی</b> · بروزرسانی {age}\n\n"
+            "{confirmed} مورد از آن‌ها همین حالا روی سرور ما یک دست‌دادن واقعی تلگرام را "
+            "گذرانده‌اند. به بقیه از اینجا دسترسی نداشتیم، اما باز هم در فهرست هستند — "
+            "شبکهٔ شما با شبکهٔ ما فرق دارد و ممکن است برای شما کار کنند.\n\n"
             "روی فایل بالا بزنید ← <b>باز کردن با</b> ← <b>Nimku Proxy</b>.\n"
-            "برنامه دوباره آن‌ها را در شبکهٔ خودتان آزمایش می‌کند، چون پروکسی‌ای که برای "
-            "ما کار می‌کند ممکن است در محل شما مسدود باشد."
+            "برنامه همه را در شبکهٔ خودتان آزمایش می‌کند و سالم‌ها را نشان می‌دهد."
         ),
         "help": (
             "❓ <b>نحوهٔ استفاده</b>\n\n"

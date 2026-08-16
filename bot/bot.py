@@ -48,7 +48,7 @@ USERS_FILE = os.path.join(cfg.output_dir, "users.json")
 # Current published list. Replaced wholesale by each refresh, so a user
 # downloading while a rebuild is running always gets a complete older file
 # rather than a half-written new one.
-state: dict = {"path": None, "count": 0, "built_at": None, "verified": cfg.verify}
+state: dict = {"path": None, "count": 0, "built_at": None, "confirmed": 0}
 
 
 # ─────────────────────────────────────────────────────────────
@@ -131,10 +131,13 @@ async def on_get(call: CallbackQuery) -> None:
     minutes = 0
     if state["built_at"]:
         minutes = int((datetime.now(timezone.utc) - state["built_at"]).total_seconds() // 60)
-    caption_key = "file_caption_verified" if state["verified"] else "file_caption"
+    # Only claim proxies are verified when we actually confirmed some; in
+    # protocol mode the file is a mix of confirmed and unproven entries.
+    caption_key = "file_caption_verified" if state["confirmed"] else "file_caption"
     caption = i18n.t(
         lang, caption_key,
         count=state["count"],
+        confirmed=state["confirmed"],
         age=i18n.age_text(lang, minutes),
     )
     # A dated filename means saved copies don't overwrite each other, and the
@@ -223,7 +226,7 @@ async def refresh_loop() -> None:
                 "path": path,
                 "count": stats.published,
                 "built_at": stats.started_at,
-                "verified": cfg.verify,
+                "confirmed": stats.confirmed,
             })
             report = scraper.summary(stats, cfg)
             log.info("refresh complete — %s", report.splitlines()[0])
@@ -248,9 +251,9 @@ async def refresh_loop() -> None:
 
 async def main() -> None:
     log.info("Nimku Proxy list bot starting")
-    log.info("sources: %d channels + %d feeds | refresh: %dm | verify: %s",
+    log.info("sources: %d channels + %d feeds | refresh: %dm | verify mode: %s",
              len(scraper.src.CHANNELS), len(scraper.src.FEEDS),
-             cfg.refresh_minutes, cfg.verify)
+             cfg.refresh_minutes, cfg.verify_mode)
     asyncio.create_task(refresh_loop())
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
