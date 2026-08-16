@@ -178,11 +178,19 @@ def after_file_kb(lang: str) -> dict:
     ]}
 
 
-def admin_kb() -> dict:
+def admin_kb(lang: str = i18n.DEFAULT_LANGUAGE) -> dict:
+    """Admin actions plus the ordinary ones.
+
+    This keyboard is attached to the hourly report, which is the message the
+    owner actually sees most often — so it has to be a place you can act from,
+    not a dead end that sends you back to typing /start.
+    """
     return {"inline_keyboard": [
-        [{"text": "📊 Stats", "callback_data": "adm:stats"}],
+        [{"text": i18n.t(lang, "menu_get"), "callback_data": "get"}],
+        [{"text": "📊 Stats", "callback_data": "adm:stats"},
+         {"text": "🔄 Rebuild now", "callback_data": "adm:rebuild"}],
         [{"text": "📢 Broadcast to all users", "callback_data": "adm:bc"}],
-        [{"text": "🔄 Rebuild list now", "callback_data": "adm:rebuild"}],
+        [{"text": i18n.t(lang, "menu_back"), "callback_data": "menu"}],
     ]}
 
 
@@ -511,7 +519,8 @@ async def refresh_loop(session: aiohttp.ClientSession) -> None:
             log.info("refresh complete — %s", report.splitlines()[0])
             if cfg.admin_id:
                 await send_message(session, cfg.admin_id,
-                                   f"🔄 <b>List rebuilt</b>\n\n<pre>{report}</pre>")
+                                   f"🔄 <b>List rebuilt</b>\n\n<pre>{report}</pre>",
+                                   admin_kb(lang_of(cfg.admin_id)))
             if cfg.publish_channel and stats.published:
                 await send_document(
                     session, cfg.publish_channel, path, "nimku-proxies.txt",
@@ -520,7 +529,8 @@ async def refresh_loop(session: aiohttp.ClientSession) -> None:
         except Exception as exc:  # noqa: BLE001 — the loop must outlive any single failure
             log.error("refresh failed: %s", exc, exc_info=True)
             if cfg.admin_id:
-                await send_message(session, cfg.admin_id, f"⚠️ Refresh failed: {exc}")
+                await send_message(session, cfg.admin_id, f"⚠️ Refresh failed: {exc}",
+                                   admin_kb(lang_of(cfg.admin_id)))
         # Sleep until the next scheduled rebuild, unless the admin asks for one
         # sooner — then wake immediately rather than waiting out the hour.
         try:
@@ -546,7 +556,8 @@ async def main() -> None:
         if cfg.admin_id:
             await send_message(session, cfg.admin_id,
                                "🟢 Proxy list bot online — building first list…\n\n"
-                               "Send /admin for stats, broadcast and manual rebuild.")
+                               "Send /admin for stats, broadcast and manual rebuild.",
+                               admin_kb(lang_of(cfg.admin_id)))
         await asyncio.gather(refresh_loop(session), poll_updates(session))
 
 
