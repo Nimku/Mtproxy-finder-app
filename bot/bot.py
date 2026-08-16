@@ -5,6 +5,11 @@ app keeps working for people whose network can't reach GitHub. Telegram is
 usually the last thing still reachable, which is exactly why the list travels
 through it.
 
+Talks to the Bot API directly over aiohttp rather than through a framework. That
+is deliberate: the only heavyweight dependency a framework brought in was
+pydantic, which has no wheel for current Python versions and tries (and fails)
+to compile itself. Long-polling and a couple of JSON calls are all this needs.
+
 Run:  python bot.py            (config comes from .env — see .env.example)
 Test: python -m mtproto        (proves the proxy checker works on this host)
 """
@@ -17,17 +22,7 @@ import logging
 import os
 from datetime import datetime, timezone
 
-from aiogram import Bot, Dispatcher, F
-from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
-from aiogram.filters import CommandStart
-from aiogram.types import (
-    CallbackQuery,
-    FSInputFile,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+import aiohttp
 
 import config
 import i18n
@@ -40,15 +35,64 @@ logging.basicConfig(
 log = logging.getLogger("bot")
 
 cfg = config.load()
-bot = Bot(cfg.bot_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-dp = Dispatcher()
-
+API = f"https://api.telegram.org/bot{cfg.bot_token}"
 USERS_FILE = os.path.join(cfg.output_dir, "users.json")
 
-# Current published list. Replaced wholesale by each refresh, so a user
-# downloading while a rebuild is running always gets a complete older file
-# rather than a half-written new one.
+# The currently published list. Replaced wholesale by each refresh, so someone
+# downloading mid-rebuild gets a complete older file rather than a half-written
+# new one.
 state: dict = {"path": None, "count": 0, "built_at": None, "confirmed": 0}
+
+
+# ─────────────────────────────────────────────────────────────
+#  Telegram Bot API
+# ─────────────────────────────────────────────────────────────
+
+async def api_call(session: aiohttp.ClientSession, method: str, payload: dict,
+                   timeout: int = 20) -> dict:
+    try:
+        async with session.post(f"{API}/{method}", json=payload,
+                                timeout=aiohttp.ClientTimeout(total=timeout)) as resp:
+            return await resp.json()
+    except Exception as exc:  # noqa: BLE001 — a failed call must never kill the loop
+        log.warning("%s failed: %s", method, exc)
+        return {}
+
+
+async def send_message(session, chat_id, text, keyboard=None) -> dict:
+    payload = {
+        "chat_id": chat_id, "text": text, "parse_mode": "HTML",
+        "disable_web_page_preview": True,
+    }
+    if keyboard is not None:
+        payload["reply_markup"] = keyboard
+    return await api_call(session, "sendMessage", payload)
+
+
+async def send_document(session, chat_id, path, filename, caption, keyboard=None) -> dict:
+    """Multipart upload — the only call here that isn't plain JSON."""
+    form = aiohttp.FormData()
+    form.add_field("chat_id", str(chat_id))
+    form.add_field("caption", caption)
+    form.add_field("parse_mode", "HTML")
+    if keyboard is not None:
+        form.add_field("reply_markup", json.dumps(keyboard))
+    with open(path, "rb") as handle:
+        form.add_field("document", handle.read(), filename=filename,
+                       content_type="text/plain")
+    try:
+        async with session.post(f"{API}/sendDocument", data=form,
+                                timeout=aiohttp.ClientTimeout(total=120)) as resp:
+            return await resp.json()
+    except Exception as exc:  # noqa: BLE001
+        log.warning("sendDocument failed: %s", exc)
+        return {}
+
+
+async def answer_callback(session, callback_id: str, text: str = "", alert: bool = False):
+    await api_call(session, "answerCallbackQuery", {
+        "callback_query_id": callback_id, "text": text, "show_alert": alert,
+    })
 
 
 # ─────────────────────────────────────────────────────────────
@@ -87,52 +131,50 @@ def set_lang(user_id: int, lang: str) -> None:
 #  Keyboards
 # ─────────────────────────────────────────────────────────────
 
-def menu_kb(lang: str) -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text=i18n.t(lang, "menu_get"), callback_data="get")],
-        [InlineKeyboardButton(text=i18n.t(lang, "menu_app"), callback_data="app")],
-        [InlineKeyboardButton(text=i18n.t(lang, "menu_help"), callback_data="help")],
-        [InlineKeyboardButton(text=i18n.t(lang, "menu_language"), callback_data="lang")],
-    ])
+def menu_kb(lang: str) -> dict:
+    return {"inline_keyboard": [
+        [{"text": i18n.t(lang, "menu_get"), "callback_data": "get"}],
+        [{"text": i18n.t(lang, "menu_app"), "callback_data": "app"}],
+        [{"text": i18n.t(lang, "menu_help"), "callback_data": "help"}],
+        [{"text": i18n.t(lang, "menu_language"), "callback_data": "lang"}],
+    ]}
 
 
-def language_kb() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text=label, callback_data=f"setlang:{code}")]
+def language_kb() -> dict:
+    return {"inline_keyboard": [
+        [{"text": label, "callback_data": f"setlang:{code}"}]
         for code, label in i18n.LANGUAGES.items()
-    ])
+    ]}
 
 
 # ─────────────────────────────────────────────────────────────
 #  Handlers
 # ─────────────────────────────────────────────────────────────
 
-@dp.message(CommandStart())
-async def on_start(message: Message) -> None:
-    user_id = message.from_user.id
+async def handle_start(session, user: dict, chat_id: int) -> None:
+    user_id = user["id"]
     if str(user_id) not in users:
         # Telegram tells us the client's language; use it rather than making a
         # first-time user pick from a menu they may not be able to read.
-        code = (message.from_user.language_code or "")[:2]
+        code = (user.get("language_code") or "")[:2]
         set_lang(user_id, code if code in i18n.LANGUAGES else i18n.DEFAULT_LANGUAGE)
     lang = lang_of(user_id)
-    await message.answer(i18n.t(lang, "welcome"), reply_markup=menu_kb(lang))
+    await send_message(session, chat_id, i18n.t(lang, "welcome"), menu_kb(lang))
 
 
-@dp.callback_query(F.data == "get")
-async def on_get(call: CallbackQuery) -> None:
-    lang = lang_of(call.from_user.id)
+async def handle_get(session, user_id: int, chat_id: int, callback_id: str) -> None:
+    lang = lang_of(user_id)
     path = state["path"]
     if not path or not os.path.exists(path):
-        await call.answer(i18n.t(lang, "not_ready"), show_alert=True)
+        await answer_callback(session, callback_id, i18n.t(lang, "not_ready"), alert=True)
         return
 
-    await call.answer(i18n.t(lang, "preparing"))
+    await answer_callback(session, callback_id, i18n.t(lang, "preparing"))
     minutes = 0
     if state["built_at"]:
         minutes = int((datetime.now(timezone.utc) - state["built_at"]).total_seconds() // 60)
-    # Only claim proxies are verified when we actually confirmed some; in
-    # protocol mode the file is a mix of confirmed and unproven entries.
+    # Only claim proxies were verified when some actually were; in protocol mode
+    # the file is a mix of confirmed and unproven entries.
     caption_key = "file_caption_verified" if state["confirmed"] else "file_caption"
     caption = i18n.t(
         lang, caption_key,
@@ -143,56 +185,87 @@ async def on_get(call: CallbackQuery) -> None:
     # A dated filename means saved copies don't overwrite each other, and the
     # user can see at a glance which one they're opening.
     stamp = (state["built_at"] or datetime.now(timezone.utc)).strftime("%Y%m%d-%H%M")
-    await bot.send_document(
-        call.from_user.id,
-        FSInputFile(path, filename=f"nimku-proxies-{stamp}.txt"),
-        caption=caption,
-        reply_markup=menu_kb(lang),
-    )
+    await send_document(session, chat_id, path, f"nimku-proxies-{stamp}.txt",
+                        caption, menu_kb(lang))
 
 
-@dp.callback_query(F.data == "app")
-async def on_app(call: CallbackQuery) -> None:
-    lang = lang_of(call.from_user.id)
-    await call.answer()
-    await call.message.answer(
-        i18n.t(lang, "app", url=i18n.APK_URL, readme=i18n.README_URL),
-        reply_markup=menu_kb(lang),
-        disable_web_page_preview=True,
-    )
+async def handle_callback(session, callback: dict) -> None:
+    user = callback.get("from", {})
+    user_id = user.get("id")
+    chat_id = (callback.get("message") or {}).get("chat", {}).get("id")
+    data = callback.get("data", "")
+    callback_id = callback.get("id")
+    if not user_id or not chat_id:
+        return
+    lang = lang_of(user_id)
+
+    if data == "get":
+        await handle_get(session, user_id, chat_id, callback_id)
+        return
+
+    await answer_callback(session, callback_id)
+
+    if data == "app":
+        await send_message(session, chat_id,
+                           i18n.t(lang, "app", url=i18n.APK_URL, readme=i18n.README_URL),
+                           menu_kb(lang))
+    elif data == "help":
+        await send_message(session, chat_id, i18n.t(lang, "help"), menu_kb(lang))
+    elif data == "lang":
+        await send_message(session, chat_id, i18n.t(lang, "choose_language"), language_kb())
+    elif data.startswith("setlang:"):
+        code = data.split(":", 1)[1]
+        if code in i18n.LANGUAGES:
+            set_lang(user_id, code)
+        lang = lang_of(user_id)
+        await send_message(session, chat_id, i18n.t(lang, "welcome"), menu_kb(lang))
 
 
-@dp.callback_query(F.data == "help")
-async def on_help(call: CallbackQuery) -> None:
-    lang = lang_of(call.from_user.id)
-    await call.answer()
-    await call.message.answer(i18n.t(lang, "help"), reply_markup=menu_kb(lang))
+async def handle_update(session, update: dict) -> None:
+    if "callback_query" in update:
+        await handle_callback(session, update["callback_query"])
+        return
+    message = update.get("message")
+    if not message:
+        return
+    user = message.get("from") or {}
+    chat_id = message.get("chat", {}).get("id")
+    if not user.get("id") or not chat_id:
+        return
+    # Any message opens the menu, not just /start. Someone who types "hi" or
+    # taps through from a channel link otherwise gets silence, which reads as a
+    # broken bot.
+    await handle_start(session, user, chat_id)
 
 
-@dp.callback_query(F.data == "lang")
-async def on_lang(call: CallbackQuery) -> None:
-    await call.answer()
-    await call.message.answer(
-        i18n.t(lang_of(call.from_user.id), "choose_language"),
-        reply_markup=language_kb(),
-    )
-
-
-@dp.callback_query(F.data.startswith("setlang:"))
-async def on_setlang(call: CallbackQuery) -> None:
-    code = call.data.split(":", 1)[1]
-    if code in i18n.LANGUAGES:
-        set_lang(call.from_user.id, code)
-    lang = lang_of(call.from_user.id)
-    await call.answer()
-    await call.message.answer(i18n.t(lang, "welcome"), reply_markup=menu_kb(lang))
+async def poll_updates(session: aiohttp.ClientSession) -> None:
+    await api_call(session, "deleteWebhook", {"drop_pending_updates": True})
+    offset = 0
+    while True:
+        try:
+            data = await api_call(session, "getUpdates", {
+                "offset": offset, "timeout": 25,
+                "allowed_updates": ["message", "callback_query"],
+            }, timeout=35)
+            if not data.get("ok"):
+                await asyncio.sleep(3)
+                continue
+            for update in data.get("result", []):
+                offset = update["update_id"] + 1
+                try:
+                    await handle_update(session, update)
+                except Exception as exc:  # noqa: BLE001
+                    log.error("update handling failed: %s", exc, exc_info=True)
+        except Exception as exc:  # noqa: BLE001
+            log.error("polling error: %s — retrying in 5s", exc)
+            await asyncio.sleep(5)
 
 
 # ─────────────────────────────────────────────────────────────
 #  Refresh loop
 # ─────────────────────────────────────────────────────────────
 
-async def _make_telethon_client():
+async def make_telethon_client():
     """Optional — without it the bot simply skips the Telegram channels.
 
     The session name must not collide with any other Telethon process on this
@@ -217,8 +290,8 @@ async def _make_telethon_client():
     return client
 
 
-async def refresh_loop() -> None:
-    client = await _make_telethon_client()
+async def refresh_loop(session: aiohttp.ClientSession) -> None:
+    client = await make_telethon_client()
     while True:
         try:
             path, stats = await scraper.run_once(client, cfg)
@@ -231,21 +304,17 @@ async def refresh_loop() -> None:
             report = scraper.summary(stats, cfg)
             log.info("refresh complete — %s", report.splitlines()[0])
             if cfg.admin_id:
-                await bot.send_message(cfg.admin_id, f"🔄 <b>List rebuilt</b>\n\n<pre>{report}</pre>")
+                await send_message(session, cfg.admin_id,
+                                   f"🔄 <b>List rebuilt</b>\n\n<pre>{report}</pre>")
             if cfg.publish_channel and stats.published:
-                await bot.send_document(
-                    cfg.publish_channel,
-                    FSInputFile(path, filename="nimku-proxies.txt"),
-                    caption=(f"📥 {stats.published} proxies · "
-                             f"{stats.started_at.strftime('%H:%M UTC')}"),
+                await send_document(
+                    session, cfg.publish_channel, path, "nimku-proxies.txt",
+                    f"📥 {stats.published} proxies · {stats.started_at.strftime('%H:%M UTC')}",
                 )
         except Exception as exc:  # noqa: BLE001 — the loop must outlive any single failure
             log.error("refresh failed: %s", exc, exc_info=True)
             if cfg.admin_id:
-                try:
-                    await bot.send_message(cfg.admin_id, f"⚠️ Refresh failed: {exc}")
-                except Exception:  # noqa: BLE001
-                    pass
+                await send_message(session, cfg.admin_id, f"⚠️ Refresh failed: {exc}")
         await asyncio.sleep(cfg.refresh_minutes * 60)
 
 
@@ -254,9 +323,17 @@ async def main() -> None:
     log.info("sources: %d channels + %d feeds | refresh: %dm | verify mode: %s",
              len(scraper.src.CHANNELS), len(scraper.src.FEEDS),
              cfg.refresh_minutes, cfg.verify_mode)
-    asyncio.create_task(refresh_loop())
-    await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot)
+    async with aiohttp.ClientSession() as session:
+        me = await api_call(session, "getMe", {})
+        if not me.get("ok"):
+            raise SystemExit(
+                "Telegram rejected BOT_TOKEN. Check the value in .env — "
+                "get a fresh one from @BotFather if you revoked the old one."
+            )
+        log.info("signed in as @%s", me["result"].get("username"))
+        if cfg.admin_id:
+            await send_message(session, cfg.admin_id, "🟢 Proxy list bot online — building first list…")
+        await asyncio.gather(refresh_loop(session), poll_updates(session))
 
 
 if __name__ == "__main__":
