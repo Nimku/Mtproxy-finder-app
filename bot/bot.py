@@ -413,9 +413,15 @@ async def handle_callback(session, callback: dict) -> None:
     await answer_callback(session, callback_id)
 
     if data == "app":
+        # A url button opens the page in one tap; the link stays in the text too
+        # so it survives being forwarded to someone else.
         await send_message(session, chat_id,
                            i18n.t(lang, "app", url=i18n.APK_URL, readme=i18n.README_URL),
-                           menu_kb(lang))
+                           {"inline_keyboard": [
+                               [{"text": i18n.t(lang, "menu_app"), "url": i18n.APK_URL}],
+                               [{"text": i18n.t(lang, "menu_help"), "callback_data": "help"}],
+                               [{"text": i18n.t(lang, "menu_back"), "callback_data": "menu"}],
+                           ]})
     elif data == "help":
         await send_message(session, chat_id, i18n.t(lang, "help"), menu_kb(lang))
     elif data == "lang":

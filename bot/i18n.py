@@ -85,7 +85,7 @@ TEXT = {
         "app": (
             "📲 <b>Nimku Proxy for Android</b>\n\n"
             "Free. No subscription, no ads, no tracking, no sign-up.\n\n"
-            "<b>1.</b> Download: {url}\n"
+            "<b>1.</b> Open the download page and tap <b>NimkuProxy.apk</b>:\n{url}\n"
             "<b>2.</b> Open the downloaded file\n"
             "<b>3.</b> Android will warn you — tap <b>Settings</b>, allow "
             "installing from this source, then <b>Install</b>\n\n"
@@ -162,7 +162,7 @@ TEXT = {
         "app": (
             "📲 <b>Nimku Proxy для Android</b>\n\n"
             "Бесплатно. Без подписки, без рекламы, без слежки, без регистрации.\n\n"
-            "<b>1.</b> Скачать: {url}\n"
+            "<b>1.</b> Откройте страницу загрузки и нажмите <b>NimkuProxy.apk</b>:\n{url}\n"
             "<b>2.</b> Откройте скачанный файл\n"
             "<b>3.</b> Android предупредит — нажмите <b>Настройки</b>, разрешите "
             "установку из этого источника, затем <b>Установить</b>\n\n"
@@ -238,7 +238,7 @@ TEXT = {
         "app": (
             "📲 <b>Nimku Proxy برای اندروید</b>\n\n"
             "رایگان. بدون اشتراک، بدون تبلیغات، بدون ردیابی، بدون ثبت‌نام.\n\n"
-            "<b>۱.</b> دانلود: {url}\n"
+            "<b>۱.</b> صفحهٔ دانلود را باز کنید و روی <b>NimkuProxy.apk</b> بزنید:\n{url}\n"
             "<b>۲.</b> فایل دانلودشده را باز کنید\n"
             "<b>۳.</b> اندروید هشدار می‌دهد — روی <b>تنظیمات</b> بزنید، اجازهٔ "
             "نصب از این منبع را بدهید، بعد <b>نصب</b>\n\n"
@@ -312,7 +312,7 @@ TEXT = {
         "app": (
             "📲 <b>Nimku Proxy لأندرويد</b>\n\n"
             "مجاني. بلا اشتراك، بلا إعلانات، بلا تتبع، بلا تسجيل.\n\n"
-            "<b>1.</b> التحميل: {url}\n"
+            "<b>1.</b> افتح صفحة التحميل واضغط على <b>NimkuProxy.apk</b>:\n{url}\n"
             "<b>2.</b> افتح الملف بعد تحميله\n"
             "<b>3.</b> سيحذرك أندرويد — اضغط <b>الإعدادات</b>، اسمح بالتثبيت من "
             "هذا المصدر، ثم <b>تثبيت</b>\n\n"
@@ -389,7 +389,7 @@ TEXT = {
         "app": (
             "📲 <b>Nimku Proxy для Android</b>\n\n"
             "Безкоштовно. Без підписки, без реклами, без стеження, без реєстрації.\n\n"
-            "<b>1.</b> Завантажити: {url}\n"
+            "<b>1.</b> Відкрийте сторінку завантаження і натисніть <b>NimkuProxy.apk</b>:\n{url}\n"
             "<b>2.</b> Відкрийте завантажений файл\n"
             "<b>3.</b> Android попередить — натисніть <b>Налаштування</b>, "
             "дозвольте встановлення з цього джерела, потім <b>Встановити</b>\n\n"
@@ -465,7 +465,7 @@ TEXT = {
         "app": (
             "📲 <b>Android için Nimku Proxy</b>\n\n"
             "Ücretsiz. Abonelik yok, reklam yok, takip yok, kayıt yok.\n\n"
-            "<b>1.</b> İndir: {url}\n"
+            "<b>1.</b> İndirme sayfasını açın ve <b>NimkuProxy.apk</b>'ye dokunun:\n{url}\n"
             "<b>2.</b> İndirilen dosyayı açın\n"
             "<b>3.</b> Android uyarı verir — <b>Ayarlar</b>'a dokunun, bu "
             "kaynaktan kuruluma izin verin, sonra <b>Yükle</b>\n\n"
@@ -538,7 +538,7 @@ TEXT = {
         "app": (
             "📲 <b>Nimku Proxy 安卓版</b>\n\n"
             "免费。无订阅、无广告、无跟踪、无需注册。\n\n"
-            "<b>1.</b> 下载：{url}\n"
+            "<b>1.</b> 打开下载页面并点击 <b>NimkuProxy.apk</b>：\n{url}\n"
             "<b>2.</b> 打开下载的文件\n"
             "<b>3.</b> 安卓会提示警告 — 点 <b>设置</b>，允许从此来源安装，"
             "然后点 <b>安装</b>\n\n"
@@ -551,7 +551,10 @@ TEXT = {
     },
 }
 
-APK_URL = "https://github.com/Nimku/Mtproxy-finder-app/releases/latest/download/NimkuProxy.apk"
+# The release page, not the file itself. It carries the VirusTotal report,
+# the SHA-256 and the install guide — the things that answer "should I trust
+# this APK", which a direct download silently skips past.
+APK_URL = "https://github.com/Nimku/Mtproxy-finder-app/releases/latest"
 README_URL = "https://github.com/Nimku/Mtproxy-finder-app#installing-the-apk"
 
 
