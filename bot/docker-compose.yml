@@ -1,0 +1,10 @@
+services:
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+      # The Telethon session lives beside the code; keep it out of the image
+      # so rebuilding doesn't force a re-login.
+      - ./nimku_scraper_session.session:/app/nimku_scraper_session.session
