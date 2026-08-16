@@ -140,10 +140,28 @@ def menu_kb(lang: str) -> dict:
     ]}
 
 
-def language_kb() -> dict:
+def language_kb(with_back: bool = False) -> dict:
+    """Two per row — seven languages in one column is a lot of scrolling on a
+    phone, which is where essentially every user of this bot is."""
+    codes = list(i18n.LANGUAGES.items())
+    rows = [
+        [{"text": label, "callback_data": f"setlang:{code}"}
+         for code, label in codes[i:i + 2]]
+        for i in range(0, len(codes), 2)
+    ]
+    if with_back:
+        rows.append([{"text": i18n.t(i18n.DEFAULT_LANGUAGE, "menu_back"),
+                      "callback_data": "menu"}])
+    return {"inline_keyboard": rows}
+
+
+def after_file_kb(lang: str) -> dict:
+    """Shown with the file itself. The two things a user needs next are right
+    there: another list if these don't work, or the app if they can't open it."""
     return {"inline_keyboard": [
-        [{"text": label, "callback_data": f"setlang:{code}"}]
-        for code, label in i18n.LANGUAGES.items()
+        [{"text": i18n.t(lang, "btn_again"), "callback_data": "get"}],
+        [{"text": i18n.t(lang, "btn_noapp"), "callback_data": "app"}],
+        [{"text": i18n.t(lang, "menu_help"), "callback_data": "help"}],
     ]}
 
 
@@ -152,12 +170,21 @@ def language_kb() -> dict:
 # ─────────────────────────────────────────────────────────────
 
 async def handle_start(session, user: dict, chat_id: int) -> None:
+    """First contact shows the language picker; everything after it is in the
+    user's own language.
+
+    Guessing silently from Telegram's language_code isn't enough on its own —
+    plenty of people in Iran and Russia run their Telegram in English, and a
+    wall of English text is exactly where a non-technical user gives up. The
+    guess still decides which language the picker itself is written in, so even
+    that first screen is usually readable.
+    """
     user_id = user["id"]
     if str(user_id) not in users:
-        # Telegram tells us the client's language; use it rather than making a
-        # first-time user pick from a menu they may not be able to read.
-        code = (user.get("language_code") or "")[:2]
-        set_lang(user_id, code if code in i18n.LANGUAGES else i18n.DEFAULT_LANGUAGE)
+        guess = i18n.match_language(user.get("language_code")) or i18n.DEFAULT_LANGUAGE
+        await send_message(session, chat_id,
+                           i18n.t(guess, "choose_language"), language_kb())
+        return
     lang = lang_of(user_id)
     await send_message(session, chat_id, i18n.t(lang, "welcome"), menu_kb(lang))
 
@@ -186,7 +213,7 @@ async def handle_get(session, user_id: int, chat_id: int, callback_id: str) -> N
     # user can see at a glance which one they're opening.
     stamp = (state["built_at"] or datetime.now(timezone.utc)).strftime("%Y%m%d-%H%M")
     await send_document(session, chat_id, path, f"nimku-proxies-{stamp}.txt",
-                        caption, menu_kb(lang))
+                        caption, after_file_kb(lang))
 
 
 async def handle_callback(session, callback: dict) -> None:
@@ -212,7 +239,10 @@ async def handle_callback(session, callback: dict) -> None:
     elif data == "help":
         await send_message(session, chat_id, i18n.t(lang, "help"), menu_kb(lang))
     elif data == "lang":
-        await send_message(session, chat_id, i18n.t(lang, "choose_language"), language_kb())
+        await send_message(session, chat_id, i18n.t(lang, "choose_language"),
+                           language_kb(with_back=True))
+    elif data == "menu":
+        await send_message(session, chat_id, i18n.t(lang, "welcome"), menu_kb(lang))
     elif data.startswith("setlang:"):
         code = data.split(":", 1)[1]
         if code in i18n.LANGUAGES:
