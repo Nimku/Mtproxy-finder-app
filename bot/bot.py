@@ -127,6 +127,19 @@ def set_lang(user_id: int, lang: str) -> None:
     _save_users()
 
 
+def touch_user(user_id: int) -> None:
+    """Anyone who interacts is a live user again — someone who blocked the bot
+    and later unblocked it should start receiving broadcasts once more."""
+    record = users.setdefault(str(user_id), {})
+    record["seen"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    if record.pop("blocked", None):
+        _save_users()
+
+
+def broadcast_targets() -> list[int]:
+    return [int(uid) for uid, rec in users.items() if not rec.get("blocked")]
+
+
 # ─────────────────────────────────────────────────────────────
 #  Keyboards
 # ─────────────────────────────────────────────────────────────
@@ -163,6 +176,160 @@ def after_file_kb(lang: str) -> dict:
         [{"text": i18n.t(lang, "btn_noapp"), "callback_data": "app"}],
         [{"text": i18n.t(lang, "menu_help"), "callback_data": "help"}],
     ]}
+
+
+def admin_kb() -> dict:
+    return {"inline_keyboard": [
+        [{"text": "📊 Stats", "callback_data": "adm:stats"}],
+        [{"text": "📢 Broadcast to all users", "callback_data": "adm:bc"}],
+        [{"text": "🔄 Rebuild list now", "callback_data": "adm:rebuild"}],
+    ]}
+
+
+def confirm_kb() -> dict:
+    return {"inline_keyboard": [
+        [{"text": "✅ Send it", "callback_data": "adm:send"}],
+        [{"text": "❌ Cancel", "callback_data": "adm:cancel"}],
+    ]}
+
+
+# What the admin is in the middle of doing, e.g. composing a broadcast.
+admin_state: dict = {}
+
+# Set by "Rebuild list now" to wake the refresh loop out of its sleep.
+rebuild_now = asyncio.Event()
+
+
+def is_admin(user_id: int) -> bool:
+    return bool(cfg.admin_id) and user_id == cfg.admin_id
+
+
+# ─────────────────────────────────────────────────────────────
+#  Admin
+# ─────────────────────────────────────────────────────────────
+
+async def send_admin_menu(session, chat_id: int) -> None:
+    await send_message(session, chat_id, "⚙️ <b>Admin</b>", admin_kb())
+
+
+async def send_stats(session, chat_id: int) -> None:
+    by_lang: dict[str, int] = {}
+    blocked = 0
+    for record in users.values():
+        if record.get("blocked"):
+            blocked += 1
+            continue
+        code = record.get("lang", i18n.DEFAULT_LANGUAGE)
+        by_lang[code] = by_lang.get(code, 0) + 1
+    breakdown = "\n".join(
+        f"  {i18n.LANGUAGES.get(code, code)}  {n}"
+        for code, n in sorted(by_lang.items(), key=lambda kv: -kv[1])
+    ) or "  nobody yet"
+
+    built = state["built_at"]
+    age = "never" if not built else (
+        f"{int((datetime.now(timezone.utc) - built).total_seconds() // 60)} min ago")
+    await send_message(session, chat_id, (
+        f"📊 <b>Stats</b>\n\n"
+        f"Users: <b>{len(users) - blocked}</b>"
+        + (f"  (+{blocked} blocked the bot)" if blocked else "") + "\n\n"
+        f"<b>By language</b>\n{breakdown}\n\n"
+        f"<b>Current list</b>\n"
+        f"  {state['count']} proxies, {state['confirmed']} confirmed\n"
+        f"  built {age}"
+    ), admin_kb())
+
+
+async def run_broadcast(session, text: str) -> None:
+    """Sends to every user, slowly enough that Telegram doesn't rate-limit us.
+
+    The Bot API tolerates roughly 30 messages a second across different chats;
+    20/s leaves headroom so a large broadcast doesn't start getting 429s
+    partway through and silently miss people. Anyone who has blocked the bot
+    comes back as 403 — mark them so later broadcasts skip them instead of
+    burning quota on chats that will never deliver.
+    """
+    targets = broadcast_targets()
+    sent = failed = 0
+    for user_id in targets:
+        result = await send_message(session, user_id, text)
+        if result.get("ok"):
+            sent += 1
+        else:
+            failed += 1
+            description = str(result.get("description", "")).lower()
+            if "blocked" in description or "chat not found" in description \
+                    or "user is deactivated" in description:
+                users.setdefault(str(user_id), {})["blocked"] = True
+        await asyncio.sleep(0.05)
+    _save_users()
+    await send_message(session, cfg.admin_id, (
+        f"📢 <b>Broadcast finished</b>\n\n"
+        f"Delivered: <b>{sent}</b>\n"
+        f"Failed: {failed}"
+        + ("\n\nFailures are mostly people who blocked the bot; "
+           "they're now skipped in future broadcasts." if failed else "")
+    ), admin_kb())
+
+
+async def handle_admin_callback(session, data: str, chat_id: int, callback_id: str) -> bool:
+    if data == "adm:stats":
+        await answer_callback(session, callback_id)
+        await send_stats(session, chat_id)
+    elif data == "adm:bc":
+        await answer_callback(session, callback_id)
+        admin_state["awaiting"] = "broadcast"
+        await send_message(session, chat_id, (
+            "📢 <b>Broadcast</b>\n\n"
+            "Send me the message now and I'll show you a preview before "
+            "anything goes out.\n\n"
+            f"It will reach <b>{len(broadcast_targets())}</b> users.\n\n"
+            "HTML formatting works: &lt;b&gt;bold&lt;/b&gt;, &lt;i&gt;italic&lt;/i&gt;, "
+            "&lt;a href=\"...\"&gt;link&lt;/a&gt;\n\n"
+            "Send /cancel to abort."
+        ))
+    elif data == "adm:send":
+        await answer_callback(session, callback_id)
+        text = admin_state.pop("draft", None)
+        admin_state.pop("awaiting", None)
+        if not text:
+            await send_message(session, chat_id, "Nothing to send.", admin_kb())
+            return True
+        await send_message(session, chat_id,
+                           f"Sending to {len(broadcast_targets())} users…")
+        asyncio.create_task(run_broadcast(session, text))
+    elif data == "adm:cancel":
+        await answer_callback(session, callback_id, "Cancelled")
+        admin_state.clear()
+        await send_message(session, chat_id, "❌ Broadcast cancelled.", admin_kb())
+    elif data == "adm:rebuild":
+        await answer_callback(session, callback_id, "Rebuilding…")
+        rebuild_now.set()
+        await send_message(session, chat_id,
+                           "🔄 Rebuilding the list now — the report arrives when it's done.")
+    else:
+        return False
+    return True
+
+
+async def handle_admin_message(session, text: str, chat_id: int) -> bool:
+    """Returns True if the message was consumed by an admin flow."""
+    if text.strip().lower() in ("/admin", "/settings"):
+        await send_admin_menu(session, chat_id)
+        return True
+    if text.strip().lower() == "/cancel" and admin_state:
+        admin_state.clear()
+        await send_message(session, chat_id, "❌ Cancelled.", admin_kb())
+        return True
+    if admin_state.get("awaiting") == "broadcast":
+        admin_state["draft"] = text
+        await send_message(session, chat_id, (
+            "👀 <b>Preview — this is exactly what users will see:</b>"))
+        await send_message(session, chat_id, text)
+        await send_message(session, chat_id, (
+            f"Send this to <b>{len(broadcast_targets())}</b> users?"), confirm_kb())
+        return True
+    return False
 
 
 # ─────────────────────────────────────────────────────────────
@@ -224,6 +391,10 @@ async def handle_callback(session, callback: dict) -> None:
     callback_id = callback.get("id")
     if not user_id or not chat_id:
         return
+    if is_admin(user_id) and data.startswith("adm:"):
+        await handle_admin_callback(session, data, chat_id, callback_id)
+        return
+    touch_user(user_id)
     lang = lang_of(user_id)
 
     if data == "get":
@@ -260,8 +431,13 @@ async def handle_update(session, update: dict) -> None:
         return
     user = message.get("from") or {}
     chat_id = message.get("chat", {}).get("id")
-    if not user.get("id") or not chat_id:
+    user_id = user.get("id")
+    if not user_id or not chat_id:
         return
+    text = message.get("text") or ""
+    if is_admin(user_id) and await handle_admin_message(session, text, chat_id):
+        return
+    touch_user(user_id)
     # Any message opens the menu, not just /start. Someone who types "hi" or
     # taps through from a channel link otherwise gets silence, which reads as a
     # broken bot.
@@ -345,7 +521,13 @@ async def refresh_loop(session: aiohttp.ClientSession) -> None:
             log.error("refresh failed: %s", exc, exc_info=True)
             if cfg.admin_id:
                 await send_message(session, cfg.admin_id, f"⚠️ Refresh failed: {exc}")
-        await asyncio.sleep(cfg.refresh_minutes * 60)
+        # Sleep until the next scheduled rebuild, unless the admin asks for one
+        # sooner — then wake immediately rather than waiting out the hour.
+        try:
+            await asyncio.wait_for(rebuild_now.wait(), timeout=cfg.refresh_minutes * 60)
+        except asyncio.TimeoutError:
+            pass
+        rebuild_now.clear()
 
 
 async def main() -> None:
@@ -362,7 +544,9 @@ async def main() -> None:
             )
         log.info("signed in as @%s", me["result"].get("username"))
         if cfg.admin_id:
-            await send_message(session, cfg.admin_id, "🟢 Proxy list bot online — building first list…")
+            await send_message(session, cfg.admin_id,
+                               "🟢 Proxy list bot online — building first list…\n\n"
+                               "Send /admin for stats, broadcast and manual rebuild.")
         await asyncio.gather(refresh_loop(session), poll_updates(session))
 
 

@@ -103,6 +103,27 @@ This connects to real Telegram data centres and runs the full handshake against
 them. If those pass, the implementation is working and any "dead" verdict is the
 proxy's fault rather than a bug. Worth running once before trusting the output.
 
+## Admin controls
+
+Send **/admin** to the bot from the account whose ID is in `ADMIN_ID`. Nobody
+else can reach it — the check is on the numeric user ID, and a non-admin pressing
+an admin button just gets the normal user menu.
+
+- **📊 Stats** — how many users, broken down by language, plus how old the
+  current list is. Users who blocked the bot are counted separately.
+- **📢 Broadcast** — send a message to every user. It shows you a preview of
+  exactly what they'll see and asks for confirmation before anything goes out.
+  HTML formatting works. `/cancel` aborts at any point.
+- **🔄 Rebuild list now** — don't wait for the hourly cycle.
+
+Broadcasts are paced at 20 messages/second, under the Bot API's limit, so a
+large one doesn't start failing partway through. Anyone who has blocked the bot
+comes back as an error; they're recorded and skipped in future broadcasts, and
+un-blocked automatically if they ever message the bot again.
+
+Be sparing with broadcasts. People who came for a proxy list will block a bot
+that messages them for no reason, and a blocked user is gone for good.
+
 ## Running it properly
 
 `nohup` loses the process on reboot and won't restart it after a crash. Use
