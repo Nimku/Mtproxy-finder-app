@@ -175,6 +175,7 @@ def after_file_kb(lang: str) -> dict:
         [{"text": i18n.t(lang, "btn_again"), "callback_data": "get"}],
         [{"text": i18n.t(lang, "btn_noapp"), "callback_data": "app"}],
         [{"text": i18n.t(lang, "menu_help"), "callback_data": "help"}],
+        [{"text": i18n.t(lang, "menu_back"), "callback_data": "menu"}],
     ]}
 
 
