@@ -1,11 +1,8 @@
 {
   "downloaded": [
     "aliilapro_mtproto.txt",
-    "dubblebyte_all.txt",
     "dubblebyte_proxies.json",
-    "hookzof_socks5.txt",
     "kort_all.txt",
-    "kort_eu.txt",
     "kort_ru.txt",
     "kort_socks5.txt",
     "kort_stats.json",
@@ -13,8 +10,12 @@
     "shablin_valid.json",
     "shablin_valid.txt"
   ],
-  "failed": [],
-  "mtproto_merged_count": 498,
+  "failed": [
+    "kort_eu.txt: HTTP Error 429: Too Many Requests",
+    "hookzof_socks5.txt: HTTP Error 429: Too Many Requests",
+    "dubblebyte_all.txt: HTTP Error 429: Too Many Requests"
+  ],
+  "mtproto_merged_count": 503,
   "sources": {
     "aliilapro_mtproto.txt": "https://raw.githubusercontent.com/ALIILAPRO/MTProtoProxy/main/mtproto.txt",
     "dubblebyte_all.txt": "https://raw.githubusercontent.com/dubblebyte/free-mtproto-proxies/main/all_proxies.txt",
